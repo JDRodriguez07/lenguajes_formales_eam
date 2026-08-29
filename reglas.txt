@@ -1,0 +1,147 @@
+LENGUAJE TUQUIQUILULU
+Dominio: juego de preguntas en linea tipo Kahoot
+
+Cada regla aparece en tres formas: como la diriamos en espanol, escrita con
+las palabras reservadas del lenguaje, y en su forma simbolica.
+
+
+===============================================================
+REGLAS CON UNA SOLA CONDICION
+===============================================================
+
+R1. Si el jugador responde correctamente, se le suman 100 puntos.
+
+    PILAS respuesta_correcta DE UNA puntos = puntos + 100 LISTO
+    puntos = puntos + 100 :- respuesta_correcta.
+
+
+R2. Si responde en menos de 5 segundos, gana 500 puntos de bonificacion.
+
+    PILAS tiempo_respuesta < 5 DE UNA bonus = 500 LISTO
+    bonus = 500 :- tiempo_respuesta < 5.
+
+
+R3. Si el jugador se queda sin vidas, la partida le sale mal.
+
+    PILAS vidas == 0 DE UNA estado = PAILA LISTO
+    estado = 0 :- vidas == 0.
+
+
+R4. Si el puntaje pasa de 1000, se le entrega una insignia.
+
+    PILAS puntos > 1000 DE UNA insignia = SISAS LISTO
+    insignia = 1 :- puntos > 1000.
+
+
+R5. Si la partida no esta activa, el contador de jugadores vuelve a cero.
+
+    PILAS NADA DE partida_activa DE UNA jugadores_conectados = 0 LISTO
+    jugadores_conectados = 0 :- ! partida_activa.
+
+
+===============================================================
+REGLAS CON CONDICIONES COMPUESTAS (Y ADEMAS / O DE PRONTO)
+===============================================================
+
+R6. Si lleva 3 o mas aciertos seguidos y ademas responde en menos de
+    10 segundos, su puntaje se multiplica por 2.
+
+    PILAS racha >= 3 Y ADEMAS tiempo_respuesta < 10 DE UNA multiplicador = 2 LISTO
+    multiplicador = 2 :- racha >= 3, tiempo_respuesta < 10.
+
+
+R7. Si quedan menos de 2 jugadores o se acaba el tiempo, la partida termina.
+
+    PILAS jugadores_conectados < 2 O DE PRONTO segundos_restantes == 0 DE UNA partida_activa = NONAS LISTO
+    partida_activa = 0 :- jugadores_conectados < 2 ; segundos_restantes == 0.
+
+
+R8. Si el puntaje esta entre 800 y 1500, la dificultad sube a nivel 2.
+
+    PILAS puntos >= 800 Y ADEMAS puntos < 1500 DE UNA dificultad = 2 LISTO
+    dificultad = 2 :- puntos >= 800, puntos < 1500.
+
+
+R9. Si lleva 5 aciertos seguidos y todavia tiene vidas, o si va de primero
+    en el ranking, su puntaje se multiplica por 3.
+
+    PILAS (racha >= 5 Y ADEMAS vidas > 1) O DE PRONTO ranking == 1 DE UNA multiplicador = 3 LISTO
+    multiplicador = 3 :- (racha >= 5, vidas > 1) ; ranking == 1.
+
+
+R10. Si va en la ultima pregunta, es el primero del ranking y aun tiene
+     vidas, gana la partida.
+
+     PILAS numero_pregunta == total_preguntas Y ADEMAS ranking == 1 Y ADEMAS vidas > 0 DE UNA estado = MELO LISTO
+     estado = 1 :- numero_pregunta == total_preguntas, ranking == 1, vidas > 0.
+
+
+===============================================================
+REGLAS QUE COMBINAN TIPOS DE DATOS (NUMERICO + BOOLEANO)
+===============================================================
+
+R11. Si acierta y ademas lo hace en 3 segundos o menos, la jugada se
+     considera perfecta.
+
+     PILAS respuesta_correcta Y ADEMAS tiempo_respuesta <= 3 DE UNA estado = MELO LISTO
+     estado = 1 :- respuesta_correcta, tiempo_respuesta <= 3.
+
+
+R12. Si uso un comodin o le queda una sola vida, las preguntas bajan al
+     nivel mas facil.
+
+     PILAS uso_comodin O DE PRONTO vidas <= 1 DE UNA dificultad = 1 LISTO
+     dificultad = 1 :- uso_comodin ; vidas <= 1.
+
+
+R13. Si esta en modo relampago y falla la pregunta, pierde una vida.
+
+     PILAS modo_relampago Y ADEMAS NADA DE respuesta_correcta DE UNA vidas = vidas - 1 LISTO
+     vidas = vidas - 1 :- modo_relampago, ! respuesta_correcta.
+
+
+R14. Si falla y traia una racha, la racha se reinicia.
+
+     PILAS NADA DE respuesta_correcta Y ADEMAS racha > 0 DE UNA racha = 0 LISTO
+     racha = 0 :- ! respuesta_correcta, racha > 0.
+
+
+R15. Si es la ultima pregunta, tiene mas de 2000 puntos y nunca uso un
+     comodin, se lleva el logro de campeon limpio.
+
+     PILAS es_final Y ADEMAS puntos > 2000 Y ADEMAS NADA DE uso_comodin DE UNA logro = "campeon limpio" LISTO
+     logro = "campeon limpio" :- es_final, puntos > 2000, ! uso_comodin.
+
+
+===============================================================
+NOTA SOBRE LA COMBINACION DE TIPOS
+===============================================================
+
+En las reglas R11 a R15 los operadores logicos reciben, de un lado, una
+variable booleana directa (respuesta_correcta, uso_comodin, es_final) y del
+otro, el resultado de comparar dos numeros (tiempo_respuesta <= 3).
+
+Los operadores relacionales toman dos numeros y devuelven un booleano, y los
+operadores logicos solo trabajan con booleanos. Por eso una condicion como
+"PILAS puntos Y ADEMAS vidas" no es valida: son numeros sueltos. En cambio
+"PILAS respuesta_correcta Y ADEMAS puntos > 100" si lo es.
+
+
+===============================================================
+EQUIVALENCIA DE SIMBOLOS
+===============================================================
+
+PILAS ... DE UNA   ->   :-        si se cumple ... entonces
+Y ADEMAS           ->   ,         conjuncion
+O DE PRONTO        ->   ;         disyuncion
+NADA DE            ->   !         negacion
+SISAS              ->   1         verdadero
+NONAS              ->   0         falso
+MELO               ->   1         resultado favorable
+PAILA              ->   0         resultado desfavorable
+LISTO              ->   .         fin de sentencia
+OJO:               ->   %         comentario
+
+En la forma simbolica la accion se escribe primero y la condicion despues del
+:-, igual que en Prolog. En la forma con palabras el orden es el natural del
+espanol: primero la condicion, luego la accion.
