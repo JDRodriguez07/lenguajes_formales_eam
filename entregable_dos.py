@@ -827,8 +827,8 @@ for token in resultado_literal:
     print(token)
 
 print(" ")
-resultado_literal_dos = "PILLE tiempo COMO DECIMAL = 3.14 LISTO"
-resultado_literal_dos = tokenizar_literales(resultado_literal_dos)
+codigo_literal_dos = "PILLE tiempo COMO DECIMAL = 3.14 LISTO"
+resultado_literal_dos = tokenizar_literales(codigo_literal_dos)
 for token in resultado_literal_dos:
     print(token)
 
@@ -886,4 +886,71 @@ print("\n======= PRUEBA TOKENIZACION OPERADORES =======")
 codigo_literal_ocho = "PILLE total COMO ENTERO = puntos + 5 * 2 LISTO"
 resultado_literal_ocho = tokenizar_operadores(codigo_literal_ocho)
 for token in resultado_literal_ocho:
+    print(token)
+
+print(" ")
+codigo_operador_sin_espacios = (
+    "PILLE total COMO ENTERO = puntos+5*2 LISTO"
+)
+resultado_operador_sin_espacios = tokenizar_operadores(
+    codigo_operador_sin_espacios
+)
+for token in resultado_operador_sin_espacios:
+    print(token)
+
+print(" ")
+codigo_operador_decimal = (
+    "PILLE puntaje COMO DECIMAL = 3.5*2+1 LISTO"
+)
+resultado_operador_decimal = tokenizar_operadores(
+    codigo_operador_decimal
+)
+for token in resultado_operador_decimal:
+    print(token)
+
+print(" ")
+codigo_operador_resta = (
+    "PILLE vidas COMO ENTERO = vidas-1 LISTO"
+)
+resultado_operador_resta = tokenizar_operadores(
+    codigo_operador_resta
+)
+for token in resultado_operador_resta:
+    print(token)
+
+print(" ")
+codigo_operador_invalido = (
+    "PILLE total COMO ENTERO = puntos/2 LISTO"
+)
+print(f"Se prueba con la línea:\n'{codigo_operador_invalido}'")
+
+try:
+    resultado_operador_invalido = tokenizar_operadores(
+        codigo_operador_invalido
+    )
+    print(resultado_operador_invalido)
+
+except SyntaxError as error:
+    print(f"Error: {error}")
+
+print(" ")
+codigo_operador_en_texto = (
+    'PILLE mensaje COMO TEXTO = "Suma: 5+2" LISTO'
+)
+resultado_operador_en_texto = tokenizar_operadores(
+    codigo_operador_en_texto
+)
+for token in resultado_operador_en_texto:
+    print(token)
+
+print(" ")
+codigo_operador_completo = (
+    "PILLE puntos COMO ENTERO = 100+50 LISTO "
+    "OJO: puntaje inicial\n"
+    "PILLE tiempo COMO DECIMAL = 3.5*2 LISTO"
+)
+resultado_operador_completo = tokenizar_operadores(
+    codigo_operador_completo
+)
+for token in resultado_operador_completo:
     print(token)
