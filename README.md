@@ -51,33 +51,31 @@ Las mismas 15 reglas escritas en el lenguaje y en su forma simbólica están en
 
 ## Clasificación de las variables
 
-| Variable             | Tipo Java | Ejemplo          |
-|----------------------|-----------|------------------|
-| puntos               | int       | 1500             |
-| bonus                | int       | 500              |
-| racha                | int       | 3                |
-| vidas                | int       | 2                |
-| numero_pregunta      | int       | 7                |
-| total_preguntas      | int       | 15               |
-| jugadores_conectados | int       | 12               |
-| segundos_restantes   | int       | 0                |
-| ranking              | int       | 1                |
-| dificultad           | int       | 2                |
-| multiplicador        | int       | 2                |
-| tiempo_respuesta     | double    | 3.5              |
-| respuesta_correcta   | boolean   | true             |
-| partida_activa       | boolean   | true             |
-| es_primero           | boolean   | false            |
-| uso_comodin          | boolean   | false            |
-| modo_relampago       | boolean   | true             |
-| es_final             | boolean   | false            |
-| insignia             | boolean   | true             |
-| estado               | boolean   | true             |
-| logro                | String    | "campeon limpio" |
-| nombre_jugador       | String    | "anggy"          |
-| categoria            | String    | "deportes"       |
-
-## Sintaxis del lenguaje
+| Variable               | Tipo Tuquiquilulu | Equivalencia Python | Ejemplo           |
+|------------------------|--------------------|---------------------|-------------------|
+| puntos                 | ENTERO             | int                 | 1500              |
+| bonus                  | ENTERO             | int                 | 500               |
+| racha                  | ENTERO             | int                 | 3                 |
+| vidas                  | ENTERO             | int                 | 2                 |
+| numero_pregunta        | ENTERO             | int                 | 7                 |
+| total_preguntas        | ENTERO             | int                 | 15                |
+| jugadores_conectados   | ENTERO             | int                 | 12                |
+| segundos_restantes     | ENTERO             | int                 | 0                 |
+| ranking                | ENTERO             | int                 | 1                 |
+| dificultad             | ENTERO             | int                 | 2                 |
+| multiplicador          | ENTERO             | int                 | 2                 |
+| tiempo_respuesta       | DECIMAL            | float               | 3.5               |
+| respuesta_correcta     | BOOLEANO           | bool                | True              |
+| partida_activa         | BOOLEANO           | bool                | True              |
+| es_primero             | BOOLEANO           | bool                | False             |
+| uso_comodin            | BOOLEANO           | bool                | False             |
+| modo_relampago         | BOOLEANO           | bool                | True              |
+| es_final               | BOOLEANO           | bool                | False             |
+| insignia               | BOOLEANO           | bool                | True              |
+| estado                 | BOOLEANO           | bool                | True              |
+| logro                  | TEXTO              | str                 | "campeon limpio"  |
+| nombre_jugador         | TEXTO              | str                 | "anggy"           |
+| categoria              | TEXTO              | str                 | "deportes"        |
 
 ## Sintaxis del lenguaje
 
@@ -220,3 +218,4 @@ entregable_uno.py
 
 entregable_dos.py
     Evolución del lexer desde la tarea 4 hasta la tarea 6.3.
+```
