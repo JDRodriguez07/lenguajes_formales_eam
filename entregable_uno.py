@@ -1,4 +1,4 @@
-#Tarea 1: Saber en qué coluna está cada pieza
+#Tarea 1: Saber en qué columna está cada pieza
 
 def tokenizar_simple(texto): 
     tokens = [] 
@@ -16,7 +16,7 @@ def tokenizar_simple(texto):
                 i += 1 
                 columna += 1
             numero = texto[inicio:i]
-            tokens.append(("NUMERO", numero, columna_inicio))  # Usamos la columna donde                
+            tokens.append(("NUMERO", numero, columna_inicio))  # Guardamos el número con la columna donde comenzó
         elif c == ";": 
             tokens.append(("SIMBOLO", c, columna))  # Usamos la columna actual
             i += 1
