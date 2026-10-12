@@ -77,19 +77,108 @@ Las mismas 15 reglas escritas en el lenguaje y en su forma simbólica están en
 | nombre_jugador       | String    | "anggy"          |
 | categoria            | String    | "deportes"       |
 
-## Sintaxis de las reglas
+## Sintaxis del lenguaje
 
+## Sintaxis del lenguaje
+
+Tuquiquilulu permite declarar variables y escribir reglas condicionales.
+
+### Declaración de variables
+
+Una declaración tiene la siguiente estructura:
+
+```text
+PILLE <variable> COMO <tipo> = <valor> LISTO
 ```
-<regla>       ::= PILAS <condicion> DE UNA <accion> LISTO
-<condicion>   ::= <comparacion> | <variable_bool> | NADA DE <condicion>
-                | <condicion> (Y ADEMÁS | O DE PRONTO) <condicion>
-                | ( <condicion> )
-<comparacion> ::= <variable> <operador> <valor>
-<operador>    ::= > | < | >= | <= | == | !=
-<accion>      ::= <variable> = <valor>
-<variable>    ::= identificador en minúsculas con guion bajo
-<valor>       ::= numero | SISAS | NONAS | MELO | PAILA | "texto"
+
+Ejemplos:
+
+```text
+PILLE puntos COMO ENTERO = 0 LISTO
+PILLE tiempo COMO DECIMAL = 3.5 LISTO
+PILLE categoria COMO TEXTO = "Historia" LISTO
+PILLE partida_activa COMO BOOLEANO = SISAS LISTO
 ```
+
+Su sintaxis en BNF es:
+
+```bnf
+<declaracion> ::= PILLE <variable> COMO <tipo>
+                  <inicializacion> LISTO
+
+<tipo> ::= ENTERO
+         | DECIMAL
+         | TEXTO
+         | BOOLEANO
+
+<inicializacion> ::= = <expresion> | ε
+```
+
+El símbolo `ε` significa que la inicialización es opcional. Por ejemplo:
+
+```text
+PILLE puntos COMO ENTERO LISTO
+```
+
+declara la variable sin asignarle inicialmente un valor.
+
+### Reglas condicionales
+
+Una regla tiene la siguiente estructura:
+
+```text
+PILAS <condicion> DE UNA <accion> LISTO
+```
+
+Su sintaxis en BNF es:
+
+```bnf
+<regla> ::= PILAS <condicion> DE UNA <accion> LISTO
+
+<condicion> ::= <comparacion>
+              | <variable_bool>
+              | NADA DE <condicion>
+              | <condicion> Y ADEMÁS <condicion>
+              | <condicion> O DE PRONTO <condicion>
+              | ( <condicion> )
+
+<comparacion> ::= <variable> <operador_relacional> <valor>
+                | <variable> <operador_relacional> <variable>
+
+<accion> ::= <variable> = <expresion>
+
+<expresion> ::= <valor>
+              | <variable>
+              | <expresion> <operador_aritmetico> <expresion>
+
+<operador_relacional> ::= >
+                        | <
+                        | >=
+                        | <=
+                        | ==
+                        | !=
+
+<operador_aritmetico> ::= +
+                        | -
+                        | *
+
+<variable> ::= identificador en minúsculas con guion bajo
+
+<valor> ::= <numero>
+          | <texto>
+          | SISAS
+          | NONAS
+          | MELO
+          | PAILA
+```
+
+### Diferencia entre `PILLE` y `PILAS`
+
+- `PILLE` comienza la declaración de una variable.
+- `PILAS` comienza una regla condicional.
+- `COMO` indica el tipo de la variable.
+- `DE UNA` separa la condición de la acción.
+- `LISTO` termina tanto declaraciones como reglas.
 
 ## Convención de escritura
 
@@ -99,6 +188,12 @@ Las mismas 15 reglas escritas en el lenguaje y en su forma simbólica están en
 - `=` asigna un valor y `==` compara. No son lo mismo.
 - Toda regla termina en LISTO.
 - Los comentarios empiezan con `OJO:`.
+- `PILLE` inicia la declaración de una variable.
+- `COMO` indica el tipo de una variable.
+- `PILAS` inicia una regla condicional.
+- Los tipos del lenguaje son `ENTERO`, `DECIMAL`, `TEXTO` y `BOOLEANO`.
+- `PILLE` y `PILAS` son palabras diferentes y cumplen funciones diferentes.
+- Toda declaración y toda regla terminan con `LISTO`.
 
 ## Palabras reservadas
 
@@ -106,8 +201,22 @@ Están documentadas con su significado y su categoría en `palabras_reservadas.m
 
 ## Archivos del proyecto
 
-```
-README.md                 este archivo
-reglas.txt                las 15 reglas en lenguaje natural, en el lenguaje y con símbolos
-palabras_reservadas.md    palabras reservadas, símbolos y categorías
-```
+```text
+README.md
+    Descripción general, tipos y sintaxis de Tuquiquilulu.
+
+reglas.txt
+    Quince reglas del juego en lenguaje natural, Tuquiquilulu
+    y su representación simbólica.
+
+palabras_reservadas.md
+    Palabras reservadas, tipos, operadores y delimitadores.
+
+paso1.py
+    Ejercicios introductorios de Python.
+
+entregable_uno.py
+    Evolución del lexer durante las tareas 1, 2 y 3.
+
+entregable_dos.py
+    Evolución del lexer desde la tarea 4 hasta la tarea 6.3.
