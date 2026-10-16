@@ -954,3 +954,214 @@ resultado_operador_completo = tokenizar_operadores(
 )
 for token in resultado_operador_completo:
     print(token)
+
+# ======================================================
+# =================== Prueba tarea 7 ===================
+# ======================================================
+
+def probar_caso_valido(nombre, codigo, salida_esperada):
+    print("\n" + "=" * 60)
+    print(f"CASO VÁLIDO: {nombre}")
+    print("=" * 60)
+
+    print("Entrada:")
+    print(codigo)
+
+    # La salida esperada se muestra antes de ejecutar el lexer.
+    print("\nSalida esperada:")
+    for token in salida_esperada:
+        print(token)
+
+    salida_real = tokenizar_operadores(codigo)
+
+    print("\nSalida real:")
+    for token in salida_real:
+        print(token)
+
+    coincide = salida_real == salida_esperada
+
+    print("\n¿Coinciden?:", "SÍ" if coincide else "NO")
+
+    return coincide
+
+
+def probar_caso_invalido(nombre, codigo, error_esperado):
+    print("\n" + "=" * 60)
+    print(f"CASO INVÁLIDO: {nombre}")
+    print("=" * 60)
+
+    print("Entrada:")
+    print(codigo)
+
+    # El error esperado se muestra antes de ejecutar el lexer.
+    print("\nError esperado:")
+    print(error_esperado)
+
+    try:
+        salida_real = tokenizar_operadores(codigo)
+
+        print("\nResultado real:")
+        for token in salida_real:
+            print(token)
+
+        print("\n¿Coinciden?: NO")
+        print("El lexer debía producir un error.")
+
+        return False
+
+    except SyntaxError as error:
+        error_real = str(error)
+
+        print("\nError real:")
+        print(error_real)
+
+        coincide = error_real == error_esperado
+
+        print("\n¿Coinciden?:", "SÍ" if coincide else "NO")
+
+        return coincide
+
+
+codigo_valido_uno = (
+    "PILLE puntos COMO ENTERO = 100 LISTO"
+)
+
+esperado_valido_uno = [
+    ("RESERVADA", "PILLE", 1, 1),
+    ("IDENTIFICADOR", "puntos", 1, 7),
+    ("RESERVADA", "COMO", 1, 14),
+    ("TIPO", "ENTERO", 1, 19),
+    ("ASIGNACION", "=", 1, 26),
+    ("NUMERO", "100", 1, 28),
+    ("FIN_INSTRUCCION", "LISTO", 1, 32)
+]
+
+resultado_valido_uno = probar_caso_valido(
+    "Declaración sencilla",
+    codigo_valido_uno,
+    esperado_valido_uno
+)
+
+codigo_valido_dos = (
+    "PILLE total COMO ENTERO = puntos+5*2 LISTO"
+)
+
+esperado_valido_dos = [
+    ("RESERVADA", "PILLE", 1, 1),
+    ("IDENTIFICADOR", "total", 1, 7),
+    ("RESERVADA", "COMO", 1, 13),
+    ("TIPO", "ENTERO", 1, 18),
+    ("ASIGNACION", "=", 1, 25),
+    ("IDENTIFICADOR", "puntos", 1, 27),
+    ("OPERADOR", "+", 1, 33),
+    ("NUMERO", "5", 1, 34),
+    ("OPERADOR", "*", 1, 35),
+    ("NUMERO", "2", 1, 36),
+    ("FIN_INSTRUCCION", "LISTO", 1, 38)
+]
+
+resultado_valido_dos = probar_caso_valido(
+    "Operadores sin espacios",
+    codigo_valido_dos,
+    esperado_valido_dos
+)
+
+codigo_valido_tres = (
+    "PILLE puntos COMO ENTERO = 100 LISTO "
+    "OJO: puntaje inicial\n"
+    "PILLE tiempo COMO DECIMAL = 3.5 LISTO"
+)
+
+esperado_valido_tres = [
+    ("RESERVADA", "PILLE", 1, 1),
+    ("IDENTIFICADOR", "puntos", 1, 7),
+    ("RESERVADA", "COMO", 1, 14),
+    ("TIPO", "ENTERO", 1, 19),
+    ("ASIGNACION", "=", 1, 26),
+    ("NUMERO", "100", 1, 28),
+    ("FIN_INSTRUCCION", "LISTO", 1, 32),
+
+    ("RESERVADA", "PILLE", 2, 1),
+    ("IDENTIFICADOR", "tiempo", 2, 7),
+    ("RESERVADA", "COMO", 2, 14),
+    ("TIPO", "DECIMAL", 2, 19),
+    ("ASIGNACION", "=", 2, 27),
+    ("NUMERO", "3.5", 2, 29),
+    ("FIN_INSTRUCCION", "LISTO", 2, 33)
+]
+
+resultado_valido_tres = probar_caso_valido(
+    "Dos líneas con comentario y decimal",
+    codigo_valido_tres,
+    esperado_valido_tres
+)
+
+codigo_invalido_uno = (
+    "PILLE puntos COMO ENTERO = 100 @ LISTO"
+)
+
+error_esperado_uno = (
+    "Error léxico: carácter inesperado '@' "
+    "en línea 1, columna 32"
+)
+
+resultado_invalido_uno = probar_caso_invalido(
+    "Carácter inexistente",
+    codigo_invalido_uno,
+    error_esperado_uno
+)
+
+codigo_invalido_dos = "int puntos = 100;"
+
+error_esperado_dos = (
+    "Error léxico: carácter inesperado ';' "
+    "en línea 1, columna 17"
+)
+
+resultado_invalido_dos = probar_caso_invalido(
+    "Declaración escrita al estilo Java",
+    codigo_invalido_dos,
+    error_esperado_dos
+)
+
+codigo_invalido_tres = (
+    "PILLE puntos COMO ENTERO = 0 LISTO\n"
+    'PILLE categoria COMO TEXTO = "Historia LISTO'
+)
+
+error_esperado_tres = (
+    "Cadena de texto sin cerrar "
+    "en línea 2, columna 30"
+)
+
+resultado_invalido_tres = probar_caso_invalido(
+    "Cadena sin cerrar en la segunda línea",
+    codigo_invalido_tres,
+    error_esperado_tres
+)
+
+resultados_pruebas = [
+    resultado_valido_uno,
+    resultado_valido_dos,
+    resultado_valido_tres,
+    resultado_invalido_uno,
+    resultado_invalido_dos,
+    resultado_invalido_tres
+]
+
+pruebas_correctas = sum(resultados_pruebas)
+total_pruebas = len(resultados_pruebas)
+
+print("\n" + "=" * 60)
+print("RESUMEN FINAL")
+print("=" * 60)
+
+print(
+    f"Pruebas correctas: "
+    f"{pruebas_correctas} de {total_pruebas}"
+)
+
+if pruebas_correctas == total_pruebas:
+    print("Resultado: todas las pruebas coinciden.")
+else:
+    print("Resultado: existen pruebas que debemos revisar.")
