@@ -17,6 +17,15 @@ bajo, para que nunca se confundan entre ellas.
 
 **FIN** — cierra el programa.
 
+**PILLE** — inicia la declaración de una variable.
+
+**COMO** — indica el tipo de una variable dentro de una declaración.
+
+Una declaración utiliza la siguiente estructura:
+
+```text
+PILLE <variable> COMO <tipo> = <valor> LISTO
+
 **PILAS** (símbolo `:-`) — anuncia la condición. Equivale a "si se cumple que".
 
 **DE UNA** (símbolo `:-`) — anuncia la acción. Equivale a "entonces".
