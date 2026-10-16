@@ -217,5 +217,6 @@ entregable_uno.py
     Evolución del lexer durante las tareas 1, 2 y 3.
 
 entregable_dos.py
-    Evolución del lexer desde la tarea 4 hasta la tarea 6.3.
+    Evolución del lexer desde la tarea 4 hasta la tarea 7,
+    incluyendo los seis casos de pruebas finales.
 ```
