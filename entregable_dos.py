@@ -143,14 +143,7 @@ def tokenizar_asignacion(texto):
 
             numero = texto[inicio:i]
 
-            tokens.append(
-                (
-                    "NUMERO",
-                    numero,
-                    linea,
-                    columna_inicio
-                )
-            )
+            tokens.append(("NUMERO", numero, linea, columna_inicio))
 
         # Reconocer palabras completas
         elif c.isalpha():
@@ -182,25 +175,11 @@ def tokenizar_asignacion(texto):
             else:
                 tipo = "IDENTIFICADOR"
 
-            tokens.append(
-                (
-                    tipo,
-                    palabra,
-                    linea,
-                    columna_inicio
-                )
-            )
+            tokens.append((tipo, palabra, linea, columna_inicio))
 
         # Reconocer el signo de asignación
         elif c == "=":
-            tokens.append(
-                (
-                    "ASIGNACION",
-                    c,
-                    linea,
-                    columna
-                )
-            )
+            tokens.append(("ASIGNACION", c, linea, columna))
 
             i += 1
             columna += 1
@@ -634,8 +613,8 @@ def tokenizar_operadores(texto):
                 ):
                     raise SyntaxError(
                         "Decimal mal formado "
-                        f"en línea {linea_inicio}, "
-                        f"columna {columna_inicio}"
+                        f"en linea {linea_inicio}, "
+                        f"columna {columna}"
                     )
 
                 # Consumir el punto
@@ -1165,3 +1144,7 @@ if pruebas_correctas == total_pruebas:
     print("Resultado: todas las pruebas coinciden.")
 else:
     print("Resultado: existen pruebas que debemos revisar.")
+
+print("===================================")
+print("Probar dos decimales: ")
+print(tokenizar_operadores(".5"))
