@@ -6,6 +6,7 @@ Las posiciones empiezan en 1. Una tabulación cuenta como una columna.
 Este analizador reconoce tokens; no valida la gramática de las instrucciones.
 """
 
+# Conjuntos: permiten comprobar si una palabra pertenece a una categoría.
 TIPOS = {"ENTERO", "DECIMAL", "TEXTO", "BOOLEANO"}
 RESERVADAS = {"PILLE", "COMO"}
 INICIO_COMENTARIO = "OJO:"
@@ -13,6 +14,13 @@ OPERADORES = {"+", "-", "*"}
 
 
 def tokenizar_operadores(texto):
+    """Devuelve tokens o lanza SyntaxError ante el primer error léxico.
+
+    El lexema se conserva como texto, incluidas las comillas de las cadenas.
+    Reconoce identificadores que empiezan por letra y continúan con letras,
+    dígitos o guion bajo. isalpha/isdigit admiten caracteres Unicode.
+    No evalúa expresiones ni comprueba tipos o variables declaradas.
+    """
     tokens = []
     i = 0
     linea = 1
@@ -162,24 +170,26 @@ def probar_caso(nombre, codigo, esperado):
 
     coincide = resultado == esperado
     print("\n¿Coinciden?:", "SÍ" if coincide else "NO")
+    if not coincide:
+        print("Revisar el cálculo manual y el lexer; anotar la causa y corrección.")
     return coincide
 
 
 if __name__ == "__main__":
     resultados = []
 
-    # Válido 1: declaración con espacios.
+    # Válido 1: también se usa para el recorrido manual del video.
     resultados.append(probar_caso(
         "CASO VÁLIDO 1 · Declaración sencilla",
-        "PILLE puntos COMO ENTERO = 100 LISTO",
+        "PILLE x COMO ENTERO = 5 LISTO",
         [
             ("RESERVADA", "PILLE", 1, 1),
-            ("IDENTIFICADOR", "puntos", 1, 7),
-            ("RESERVADA", "COMO", 1, 14),
-            ("TIPO", "ENTERO", 1, 19),
-            ("ASIGNACION", "=", 1, 26),
-            ("NUMERO", "100", 1, 28),
-            ("FIN_INSTRUCCION", "LISTO", 1, 32),
+            ("IDENTIFICADOR", "x", 1, 7),
+            ("RESERVADA", "COMO", 1, 9),
+            ("TIPO", "ENTERO", 1, 14),
+            ("ASIGNACION", "=", 1, 21),
+            ("NUMERO", "5", 1, 23),
+            ("FIN_INSTRUCCION", "LISTO", 1, 25),
         ],
     ))
 
@@ -202,19 +212,19 @@ if __name__ == "__main__":
         ],
     ))
 
-    # Válido 3: comentario, salto de línea y literal decimal.
+    # Válido 3: cadena cerrada, comentario, salto de línea y decimal.
     resultados.append(probar_caso(
-        "CASO VÁLIDO 3 · Dos líneas y comentario",
-        "PILLE puntos COMO ENTERO = 100 LISTO OJO: puntaje inicial\n"
+        "CASO VÁLIDO 3 · Texto, comentario y decimal en dos líneas",
+        'PILLE nombre COMO TEXTO = "Ana" LISTO OJO: comentario\n'
         "PILLE tiempo COMO DECIMAL = 3.5 LISTO",
         [
             ("RESERVADA", "PILLE", 1, 1),
-            ("IDENTIFICADOR", "puntos", 1, 7),
+            ("IDENTIFICADOR", "nombre", 1, 7),
             ("RESERVADA", "COMO", 1, 14),
-            ("TIPO", "ENTERO", 1, 19),
-            ("ASIGNACION", "=", 1, 26),
-            ("NUMERO", "100", 1, 28),
-            ("FIN_INSTRUCCION", "LISTO", 1, 32),
+            ("TIPO", "TEXTO", 1, 19),
+            ("ASIGNACION", "=", 1, 25),
+            ("TEXTO", '"Ana"', 1, 27),
+            ("FIN_INSTRUCCION", "LISTO", 1, 33),
             ("RESERVADA", "PILLE", 2, 1),
             ("IDENTIFICADOR", "tiempo", 2, 7),
             ("RESERVADA", "COMO", 2, 14),
