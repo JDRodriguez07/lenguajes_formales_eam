@@ -1,9 +1,4 @@
 """Tuquiquilulu: analizador léxico y seis pruebas del parcial.
-
-Ejecutar: python parcial.py
-Cada token contiene (tipo, lexema, línea, columna).
-Las posiciones empiezan en 1. Una tabulación cuenta como una columna.
-Este analizador reconoce tokens; no valida la gramática de las instrucciones.
 """
 
 # Conjuntos: permiten comprobar si una palabra pertenece a una categoría.
@@ -15,11 +10,6 @@ OPERADORES = {"+", "-", "*"}
 
 def tokenizar_operadores(texto):
     """Devuelve tokens o lanza SyntaxError ante el primer error léxico.
-
-    El lexema se conserva como texto, incluidas las comillas de las cadenas.
-    Reconoce identificadores que empiezan por letra y continúan con letras,
-    dígitos o guion bajo. isalpha/isdigit admiten caracteres Unicode.
-    No evalúa expresiones ni comprueba tipos o variables declaradas.
     """
     tokens = []
     i = 0
