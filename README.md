@@ -47,7 +47,7 @@ en vez de SI y ENTONCES usamos PILAS y DE UNA.
 15. Si es la última pregunta, tiene más de 2000 puntos y nunca usó un comodín, se lleva el logro de campeón limpio.
 
 Las mismas 15 reglas escritas en el lenguaje y en su forma simbólica están en
-`reglas.txt`.
+`docs/reglas.txt`.
 
 ## Clasificación de las variables
 
@@ -195,28 +195,55 @@ Su sintaxis en BNF es:
 
 ## Palabras reservadas
 
-Están documentadas con su significado y su categoría en `palabras_reservadas.md`.
+Están documentadas con su significado y su categoría en `docs/palabras_reservadas.md`.
 
 ## Archivos del proyecto
 
-```text
-README.md
-    Descripción general, tipos y sintaxis de Tuquiquilulu.
+| Archivo o carpeta | Descripción |
+|---|---|
+| `main.py` | Punto de entrada: recibe la ruta de un archivo, ejecuta el lexer y muestra la tabla de tokens o el mensaje de error. |
+| `tuquiquilulu/__init__.py` | Identifica el paquete del analizador. |
+| `tuquiquilulu/lexer.py` | Configuración del vocabulario y función `tokenizar`, encargada del análisis léxico. |
+| `tuquiquilulu/tokens.py` | Clases `Token` y `ErrorLexico`. |
+| `tests/__init__.py` | Identifica el paquete de pruebas. |
+| `tests/test_lexer.py` | Casos de prueba con entradas, resultados esperados y comparación con los resultados reales. |
+| `examples/programa_valido.txt` | Entrada válida para comprobar la lectura de archivos y la tabla de tokens. |
+| `examples/programa_invalido.txt` | Entrada con un error léxico para comprobar su ubicación y mensaje. |
+| `docs/reglas.txt` | Quince reglas del juego en lenguaje natural, Tuquiquilulu y representación simbólica. |
+| `docs/palabras_reservadas.md` | Documentación del vocabulario y los símbolos del lenguaje. |
+| `historico/` | Ejercicios y entregables anteriores que conservan la evolución del proyecto. |
+| `.gitignore` | Excluye archivos generados por Python y entornos virtuales del control de versiones. |
+| `README.md` | Descripción general del proyecto, sintaxis e instrucciones de ejecución. |
 
-reglas.txt
-    Quince reglas del juego en lenguaje natural, Tuquiquilulu
-    y su representación simbólica.
+La carpeta `historico/` contiene `paso1.py`, `entregable_uno.py`,
+`entregable_dos.py` y `parcial.py`. La implementación actual está en
+`tuquiquilulu/` y sus pruebas están en `tests/test_lexer.py`.
 
-palabras_reservadas.md
-    Palabras reservadas, tipos, operadores y delimitadores.
+## Ejecución
 
-paso1.py
-    Ejercicios introductorios de Python.
+Ejecutar los siguientes comandos desde la raíz del proyecto.
 
-entregable_uno.py
-    Evolución del lexer durante las tareas 1, 2 y 3.
+Analizar un archivo válido:
 
-entregable_dos.py
-    Evolución del lexer desde la tarea 4 hasta la tarea 7,
-    incluyendo los seis casos de pruebas finales.
+```bash
+python main.py examples/programa_valido.txt
 ```
+
+Comprobar el reporte de un error léxico:
+
+```bash
+python main.py examples/programa_invalido.txt
+```
+
+Ejecutar las pruebas:
+
+```bash
+python -m tests.test_lexer
+```
+
+El analizador muestra la línea, columna, tipo y texto de cada token,
+incluido el token final `EOF`. Si encuentra un error léxico, muestra
+su mensaje y posición sin imprimir una traza de Python.
+
+El lexer reconoce las piezas de la entrada; todavía no valida la
+estructura sintáctica completa ni ejecuta las instrucciones.
