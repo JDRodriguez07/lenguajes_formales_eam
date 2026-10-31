@@ -1,6 +1,21 @@
 """Tuquiquilulu: analizador léxico y seis pruebas del parcial.
 """
 
+from dataclasses import dataclass
+
+@dataclass
+class Token:
+    tipo: str
+    texto: str
+    linea: int
+    columna: int
+
+    def __str__(self):
+        return (
+            f"{self.tipo}({self.texto!r}) "
+            f"en {self.linea}:{self.columna}"
+        )
+
 # Conjuntos: permiten comprobar si una palabra pertenece a una categoría.
 TIPOS = {"ENTERO", "DECIMAL", "TEXTO", "BOOLEANO"}
 
@@ -33,7 +48,7 @@ OPERADORES_DOBLES = {"==", "!=", "<=", ">="}
 # Delimitadores y signos de puntuación de la tarea 8.
 SIMBOLOS = {"(", ")", "{", "}", ",", ".", ";"}
 
-def tokenizar_fin_archivo(texto):
+def tokenizar_con_clase(texto):
     """Devuelve tokens o lanza SyntaxError ante el primer error léxico.
     """
     tokens = []
@@ -126,7 +141,7 @@ def tokenizar_fin_archivo(texto):
                         f"Decimal mal formado en línea {linea}, columna {columna}"
                     )
 
-            tokens.append(("NUMERO", texto[inicio:i], linea_inicio, columna_inicio))
+            tokens.append(Token("NUMERO", texto[inicio:i], linea_inicio, columna_inicio))
 
         # 5. Leer texto entre comillas dobles, en una sola línea.
         # Esta versión no implementa secuencias de escape.
@@ -149,7 +164,7 @@ def tokenizar_fin_archivo(texto):
 
             i += 1
             columna += 1
-            tokens.append(("TEXTO", texto[inicio:i], linea_inicio, columna_inicio))
+            tokens.append(Token("TEXTO", texto[inicio:i], linea_inicio, columna_inicio))
 
         # 6. Leer la palabra completa antes de clasificarla.
         elif c.isalpha():
@@ -177,32 +192,32 @@ def tokenizar_fin_archivo(texto):
             else:
                 tipo = "IDENTIFICADOR"
 
-            tokens.append((tipo, palabra, linea, columna_inicio))
+            tokens.append(Token(tipo, palabra, linea, columna_inicio))
 
         # 7. Reconocer operadores de dos caracteres.
         elif texto[i:i + 2] in OPERADORES_DOBLES:
             operador = texto[i:i + 2]
 
-            tokens.append(("OPERADOR", operador, linea, columna))
+            tokens.append(Token("OPERADOR", operador, linea, columna))
 
             i += 2
             columna += 2
 
         # 8. Reconocer la asignación.
         elif c == "=":
-            tokens.append(("ASIGNACION", c, linea, columna))
+            tokens.append(Token("ASIGNACION", c, linea, columna))
             i += 1
             columna += 1
 
         # 9. Reconocer operadores de un carácter.
         elif c in OPERADORES:
-            tokens.append(("OPERADOR", c, linea, columna))
+            tokens.append(Token("OPERADOR", c, linea, columna))
             i += 1
             columna += 1
 
         # 10. Reconocer delimitadores
         elif c in SIMBOLOS:
-            tokens.append(("SIMBOLO", c, linea, columna))
+            tokens.append(Token("SIMBOLO", c, linea, columna))
             i += 1
             columna += 1
 
@@ -214,7 +229,7 @@ def tokenizar_fin_archivo(texto):
             )
 
     # El recorrido terminó: señalar el final de la entrada.
-    tokens.append(("EOF", "", linea, columna))
+    tokens.append(Token("EOF", "", linea, columna))
 
     return tokens
 
@@ -235,7 +250,7 @@ def probar_caso(nombre, codigo, esperado):
 
     print("\nSalida real:")
     try:
-        resultado = tokenizar_fin_archivo(codigo)
+        resultado = tokenizar_con_clase(codigo)
         for token in resultado:
             print(token)
     except SyntaxError as error:
@@ -257,14 +272,14 @@ if __name__ == "__main__":
         "CASO VÁLIDO 1 · Declaración sencilla",
         "PILLE x COMO ENTERO = 5 LISTO",
         [
-            ("RESERVADA", "PILLE", 1, 1),
-            ("IDENTIFICADOR", "x", 1, 7),
-            ("RESERVADA", "COMO", 1, 9),
-            ("TIPO", "ENTERO", 1, 14),
-            ("ASIGNACION", "=", 1, 21),
-            ("NUMERO", "5", 1, 23),
-            ("FIN_INSTRUCCION", "LISTO", 1, 25),
-            ("EOF", "", 1, 30),
+            Token("RESERVADA", "PILLE", 1, 1),
+            Token("IDENTIFICADOR", "x", 1, 7),
+            Token("RESERVADA", "COMO", 1, 9),
+            Token("TIPO", "ENTERO", 1, 14),
+            Token("ASIGNACION", "=", 1, 21),
+            Token("NUMERO", "5", 1, 23),
+            Token("FIN_INSTRUCCION", "LISTO", 1, 25),
+            Token("EOF", "", 1, 30),
         ],
     ))
 
@@ -273,18 +288,18 @@ if __name__ == "__main__":
         "CASO VÁLIDO 2 · Operadores sin espacios",
         "PILLE total COMO ENTERO = puntos+5*2 LISTO",
         [
-            ("RESERVADA", "PILLE", 1, 1),
-            ("IDENTIFICADOR", "total", 1, 7),
-            ("RESERVADA", "COMO", 1, 13),
-            ("TIPO", "ENTERO", 1, 18),
-            ("ASIGNACION", "=", 1, 25),
-            ("IDENTIFICADOR", "puntos", 1, 27),
-            ("OPERADOR", "+", 1, 33),
-            ("NUMERO", "5", 1, 34),
-            ("OPERADOR", "*", 1, 35),
-            ("NUMERO", "2", 1, 36),
-            ("FIN_INSTRUCCION", "LISTO", 1, 38),
-            ("EOF", "", 1, 43),
+            Token("RESERVADA", "PILLE", 1, 1),
+            Token("IDENTIFICADOR", "total", 1, 7),
+            Token("RESERVADA", "COMO", 1, 13),
+            Token("TIPO", "ENTERO", 1, 18),
+            Token("ASIGNACION", "=", 1, 25),
+            Token("IDENTIFICADOR", "puntos", 1, 27),
+            Token("OPERADOR", "+", 1, 33),
+            Token("NUMERO", "5", 1, 34),
+            Token("OPERADOR", "*", 1, 35),
+            Token("NUMERO", "2", 1, 36),
+            Token("FIN_INSTRUCCION", "LISTO", 1, 38),
+            Token("EOF", "", 1, 43),
         ],
     ))
 
@@ -294,21 +309,21 @@ if __name__ == "__main__":
         'PILLE nombre COMO TEXTO = "Ana" LISTO OJO: comentario\n'
         "PILLE tiempo COMO DECIMAL = 3.5 LISTO",
         [
-            ("RESERVADA", "PILLE", 1, 1),
-            ("IDENTIFICADOR", "nombre", 1, 7),
-            ("RESERVADA", "COMO", 1, 14),
-            ("TIPO", "TEXTO", 1, 19),
-            ("ASIGNACION", "=", 1, 25),
-            ("TEXTO", '"Ana"', 1, 27),
-            ("FIN_INSTRUCCION", "LISTO", 1, 33),
-            ("RESERVADA", "PILLE", 2, 1),
-            ("IDENTIFICADOR", "tiempo", 2, 7),
-            ("RESERVADA", "COMO", 2, 14),
-            ("TIPO", "DECIMAL", 2, 19),
-            ("ASIGNACION", "=", 2, 27),
-            ("NUMERO", "3.5", 2, 29),
-            ("FIN_INSTRUCCION", "LISTO", 2, 33),
-            ("EOF", "", 2, 38),
+            Token("RESERVADA", "PILLE", 1, 1),
+            Token("IDENTIFICADOR", "nombre", 1, 7),
+            Token("RESERVADA", "COMO", 1, 14),
+            Token("TIPO", "TEXTO", 1, 19),
+            Token("ASIGNACION", "=", 1, 25),
+            Token("TEXTO", '"Ana"', 1, 27),
+            Token("FIN_INSTRUCCION", "LISTO", 1, 33),
+            Token("RESERVADA", "PILLE", 2, 1),
+            Token("IDENTIFICADOR", "tiempo", 2, 7),
+            Token("RESERVADA", "COMO", 2, 14),
+            Token("TIPO", "DECIMAL", 2, 19),
+            Token("ASIGNACION", "=", 2, 27),
+            Token("NUMERO", "3.5", 2, 29),
+            Token("FIN_INSTRUCCION", "LISTO", 2, 33),
+            Token("EOF", "", 2, 38),
         ],
     ))
 
@@ -339,15 +354,15 @@ if __name__ == "__main__":
         "TAREA 8 · Expresión con delimitadores",
         "(a+b)*2;",
         [
-            ("SIMBOLO", "(", 1, 1),
-            ("IDENTIFICADOR", "a", 1, 2),
-            ("OPERADOR", "+", 1, 3),
-            ("IDENTIFICADOR", "b", 1, 4),
-            ("SIMBOLO", ")", 1, 5),
-            ("OPERADOR", "*", 1, 6),
-            ("NUMERO", "2", 1, 7),
-            ("SIMBOLO", ";", 1, 8),
-            ("EOF", "", 1, 9),
+            Token("SIMBOLO", "(", 1, 1),
+            Token("IDENTIFICADOR", "a", 1, 2),
+            Token("OPERADOR", "+", 1, 3),
+            Token("IDENTIFICADOR", "b", 1, 4),
+            Token("SIMBOLO", ")", 1, 5),
+            Token("OPERADOR", "*", 1, 6),
+            Token("NUMERO", "2", 1, 7),
+            Token("SIMBOLO", ";", 1, 8),
+            Token("EOF", "", 1, 9),
         ],
     ))
 
@@ -356,11 +371,11 @@ if __name__ == "__main__":
         "TAREA 8 · Punto y decimal",
         "System.out 3.14",
         [
-            ("IDENTIFICADOR", "System", 1, 1),
-            ("SIMBOLO", ".", 1, 7),
-            ("IDENTIFICADOR", "out", 1, 8),
-            ("NUMERO", "3.14", 1, 12),
-            ("EOF", "", 1, 16),
+            Token("IDENTIFICADOR", "System", 1, 1),
+            Token("SIMBOLO", ".", 1, 7),
+            Token("IDENTIFICADOR", "out", 1, 8),
+            Token("NUMERO", "3.14", 1, 12),
+            Token("EOF", "", 1, 16),
         ],
     ))
 
@@ -369,12 +384,12 @@ if __name__ == "__main__":
         "TAREA 8 · Llaves y coma",
         "{a,b}",
         [
-            ("SIMBOLO", "{", 1, 1),
-            ("IDENTIFICADOR", "a", 1, 2),
-            ("SIMBOLO", ",", 1, 3),
-            ("IDENTIFICADOR", "b", 1, 4),
-            ("SIMBOLO", "}", 1, 5),
-            ("EOF", "", 1, 6),
+            Token("SIMBOLO", "{", 1, 1),
+            Token("IDENTIFICADOR", "a", 1, 2),
+            Token("SIMBOLO", ",", 1, 3),
+            Token("IDENTIFICADOR", "b", 1, 4),
+            Token("SIMBOLO", "}", 1, 5),
+            Token("EOF", "", 1, 6),
         ],
     ))
 
@@ -382,23 +397,23 @@ if __name__ == "__main__":
         "TAREA 9 · Operadores dobles",
         "a==b a!=b a<=b a>=b",
         [
-            ("IDENTIFICADOR", "a", 1, 1),
-            ("OPERADOR", "==", 1, 2),
-            ("IDENTIFICADOR", "b", 1, 4),
+            Token("IDENTIFICADOR", "a", 1, 1),
+            Token("OPERADOR", "==", 1, 2),
+            Token("IDENTIFICADOR", "b", 1, 4),
 
-            ("IDENTIFICADOR", "a", 1, 6),
-            ("OPERADOR", "!=", 1, 7),
-            ("IDENTIFICADOR", "b", 1, 9),
+            Token("IDENTIFICADOR", "a", 1, 6),
+            Token("OPERADOR", "!=", 1, 7),
+            Token("IDENTIFICADOR", "b", 1, 9),
 
-            ("IDENTIFICADOR", "a", 1, 11),
-            ("OPERADOR", "<=", 1, 12),
-            ("IDENTIFICADOR", "b", 1, 14),
+            Token("IDENTIFICADOR", "a", 1, 11),
+            Token("OPERADOR", "<=", 1, 12),
+            Token("IDENTIFICADOR", "b", 1, 14),
 
-            ("IDENTIFICADOR", "a", 1, 16),
-            ("OPERADOR", ">=", 1, 17),
-            ("IDENTIFICADOR", "b", 1, 19),
+            Token("IDENTIFICADOR", "a", 1, 16),
+            Token("OPERADOR", ">=", 1, 17),
+            Token("IDENTIFICADOR", "b", 1, 19),
 
-            ("EOF", "", 1, 20),
+            Token("EOF", "", 1, 20),
         ],
     ))
 
@@ -406,13 +421,13 @@ if __name__ == "__main__":
         "TAREA 9 · Operadores relacionales simples",
         "a<b a>b",
         [
-            ("IDENTIFICADOR", "a", 1, 1),
-            ("OPERADOR", "<", 1, 2),
-            ("IDENTIFICADOR", "b", 1, 3),
-            ("IDENTIFICADOR", "a", 1, 5),
-            ("OPERADOR", ">", 1, 6),
-            ("IDENTIFICADOR", "b", 1, 7),
-            ("EOF", "", 1, 8),
+            Token("IDENTIFICADOR", "a", 1, 1),
+            Token("OPERADOR", "<", 1, 2),
+            Token("IDENTIFICADOR", "b", 1, 3),
+            Token("IDENTIFICADOR", "a", 1, 5),
+            Token("OPERADOR", ">", 1, 6),
+            Token("IDENTIFICADOR", "b", 1, 7),
+            Token("EOF", "", 1, 8),
         ],
     ))
 
@@ -420,10 +435,10 @@ if __name__ == "__main__":
         "TAREA 9 · Comparación de igualdad",
         "x == 5",
         [
-            ("IDENTIFICADOR", "x", 1, 1),
-            ("OPERADOR", "==", 1, 3),
-            ("NUMERO", "5", 1, 6),
-            ("EOF", "", 1, 7),
+            Token("IDENTIFICADOR", "x", 1, 1),
+            Token("OPERADOR", "==", 1, 3),
+            Token("NUMERO", "5", 1, 6),
+            Token("EOF", "", 1, 7),
         ],
     ))
 
@@ -431,11 +446,11 @@ if __name__ == "__main__":
         "TAREA 9 · Asignaciones separadas por un espacio",
         "x = = 5",
         [
-            ("IDENTIFICADOR", "x", 1, 1),
-            ("ASIGNACION", "=", 1, 3),
-            ("ASIGNACION", "=", 1, 5),
-            ("NUMERO", "5", 1, 7),
-            ("EOF", "", 1, 8),
+            Token("IDENTIFICADOR", "x", 1, 1),
+            Token("ASIGNACION", "=", 1, 3),
+            Token("ASIGNACION", "=", 1, 5),
+            Token("NUMERO", "5", 1, 7),
+            Token("EOF", "", 1, 8),
         ],
     ))
 
@@ -449,10 +464,10 @@ if __name__ == "__main__":
         "TAREA 10 · Reservadas de control",
         "if else while",
         [
-            ("RESERVADA", "if", 1, 1),
-            ("RESERVADA", "else", 1, 4),
-            ("RESERVADA", "while", 1, 9),
-            ("EOF", "", 1, 14),
+            Token("RESERVADA", "if", 1, 1),
+            Token("RESERVADA", "else", 1, 4),
+            Token("RESERVADA", "while", 1, 9),
+            Token("EOF", "", 1, 14),
         ],
     ))
 
@@ -460,12 +475,12 @@ if __name__ == "__main__":
         "TAREA 10 · Palabras completas",
         "if iffy while_x PILAS PILAS_extra",
         [
-            ("RESERVADA", "if", 1, 1),
-            ("IDENTIFICADOR", "iffy", 1, 4),
-            ("IDENTIFICADOR", "while_x", 1, 9),
-            ("RESERVADA", "PILAS", 1, 17),
-            ("IDENTIFICADOR", "PILAS_extra", 1, 23),
-            ("EOF", "", 1, 34),
+            Token("RESERVADA", "if", 1, 1),
+            Token("IDENTIFICADOR", "iffy", 1, 4),
+            Token("IDENTIFICADOR", "while_x", 1, 9),
+            Token("RESERVADA", "PILAS", 1, 17),
+            Token("IDENTIFICADOR", "PILAS_extra", 1, 23),
+            Token("EOF", "", 1, 34),
         ],
     ))
 
@@ -473,13 +488,13 @@ if __name__ == "__main__":
         "TAREA 10 · Valores booleanos",
         "SISAS NONAS MELO PAILA true false",
         [
-            ("BOOLEANO", "SISAS", 1, 1),
-            ("BOOLEANO", "NONAS", 1, 7),
-            ("BOOLEANO", "MELO", 1, 13),
-            ("BOOLEANO", "PAILA", 1, 18),
-            ("BOOLEANO", "true", 1, 24),
-            ("BOOLEANO", "false", 1, 29),
-            ("EOF", "", 1, 34),
+            Token("BOOLEANO", "SISAS", 1, 1),
+            Token("BOOLEANO", "NONAS", 1, 7),
+            Token("BOOLEANO", "MELO", 1, 13),
+            Token("BOOLEANO", "PAILA", 1, 18),
+            Token("BOOLEANO", "true", 1, 24),
+            Token("BOOLEANO", "false", 1, 29),
+            Token("EOF", "", 1, 34),
         ],
     ))
 
@@ -487,11 +502,11 @@ if __name__ == "__main__":
         "TAREA 10 · Tipo, valor e identificadores",
         "BOOLEANO SISAS SISAS_extra true_x",
         [
-            ("TIPO", "BOOLEANO", 1, 1),
-            ("BOOLEANO", "SISAS", 1, 10),
-            ("IDENTIFICADOR", "SISAS_extra", 1, 16),
-            ("IDENTIFICADOR", "true_x", 1, 28),
-            ("EOF", "", 1, 34),
+            Token("TIPO", "BOOLEANO", 1, 1),
+            Token("BOOLEANO", "SISAS", 1, 10),
+            Token("IDENTIFICADOR", "SISAS_extra", 1, 16),
+            Token("IDENTIFICADOR", "true_x", 1, 28),
+            Token("EOF", "", 1, 34),
         ],
     ))
 
@@ -499,10 +514,10 @@ if __name__ == "__main__":
         "TAREA 11 · Comentario en una línea",
         "a/* hola */+b",
         [
-            ("IDENTIFICADOR", "a", 1, 1),
-            ("OPERADOR", "+", 1, 12),
-            ("IDENTIFICADOR", "b", 1, 13),
-            ("EOF", "", 1, 14),
+            Token("IDENTIFICADOR", "a", 1, 1),
+            Token("OPERADOR", "+", 1, 12),
+            Token("IDENTIFICADOR", "b", 1, 13),
+            Token("EOF", "", 1, 14),
         ],
     ))
 
@@ -513,23 +528,23 @@ if __name__ == "__main__":
         "tres */\n"
         "PILLE b COMO ENTERO = 2 LISTO",
         [
-            ("RESERVADA", "PILLE", 1, 1),
-            ("IDENTIFICADOR", "a", 1, 7),
-            ("RESERVADA", "COMO", 1, 9),
-            ("TIPO", "ENTERO", 1, 14),
-            ("ASIGNACION", "=", 1, 21),
-            ("NUMERO", "1", 1, 23),
-            ("FIN_INSTRUCCION", "LISTO", 1, 25),
+            Token("RESERVADA", "PILLE", 1, 1),
+            Token("IDENTIFICADOR", "a", 1, 7),
+            Token("RESERVADA", "COMO", 1, 9),
+            Token("TIPO", "ENTERO", 1, 14),
+            Token("ASIGNACION", "=", 1, 21),
+            Token("NUMERO", "1", 1, 23),
+            Token("FIN_INSTRUCCION", "LISTO", 1, 25),
 
-            ("RESERVADA", "PILLE", 4, 1),
-            ("IDENTIFICADOR", "b", 4, 7),
-            ("RESERVADA", "COMO", 4, 9),
-            ("TIPO", "ENTERO", 4, 14),
-            ("ASIGNACION", "=", 4, 21),
-            ("NUMERO", "2", 4, 23),
-            ("FIN_INSTRUCCION", "LISTO", 4, 25),
+            Token("RESERVADA", "PILLE", 4, 1),
+            Token("IDENTIFICADOR", "b", 4, 7),
+            Token("RESERVADA", "COMO", 4, 9),
+            Token("TIPO", "ENTERO", 4, 14),
+            Token("ASIGNACION", "=", 4, 21),
+            Token("NUMERO", "2", 4, 23),
+            Token("FIN_INSTRUCCION", "LISTO", 4, 25),
 
-            ("EOF", "", 4, 30),
+            Token("EOF", "", 4, 30),
         ],
     ))
 
@@ -537,8 +552,8 @@ if __name__ == "__main__":
         "TAREA 11 · Marcadores dentro de una cadena",
         '"/* hola */"',
         [
-            ("TEXTO", '"/* hola */"', 1, 1),
-            ("EOF", "", 1, 13),
+            Token("TEXTO", '"/* hola */"', 1, 1),
+            Token("EOF", "", 1, 13),
         ],
     ))
 
@@ -552,7 +567,7 @@ if __name__ == "__main__":
         "TAREA 12 · Entrada vacía",
         "",
         [
-            ("EOF", "", 1, 1),
+            Token("EOF", "", 1, 1),
         ],
     ))
 
@@ -560,8 +575,8 @@ if __name__ == "__main__":
         "TAREA 12 · Salto de línea al final",
         "x\n",
         [
-            ("IDENTIFICADOR", "x", 1, 1),
-            ("EOF", "", 2, 1),
+            Token("IDENTIFICADOR", "x", 1, 1),
+            Token("EOF", "", 2, 1),
         ],
     ))
 
@@ -569,7 +584,7 @@ if __name__ == "__main__":
         "TAREA 12 · Solo un comentario",
         "/* hola */",
         [
-            ("EOF", "", 1, 11),
+            Token("EOF", "", 1, 11),
         ],
     ))
 
