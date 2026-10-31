@@ -1,0 +1,10 @@
+# Archivos generados automáticamente por Python
+__pycache__/
+*.py[cod]
+
+# Entornos virtuales
+.venv/
+venv/
+
+# Caché de herramientas de pruebas
+.pytest_cache/

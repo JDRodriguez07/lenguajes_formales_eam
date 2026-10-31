@@ -1,238 +1,7 @@
-"""Tuquiquilulu: analizador léxico y seis pruebas del parcial.
-"""
+"""Pruebas del analizador léxico de Tuquiquilulu."""
 
-from dataclasses import dataclass
-
-@dataclass
-class Token:
-    tipo: str
-    texto: str
-    linea: int
-    columna: int
-
-    def __str__(self):
-        return (
-            f"{self.tipo}({self.texto!r}) "
-            f"en {self.linea}:{self.columna}"
-        )
-
-# Conjuntos: permiten comprobar si una palabra pertenece a una categoría.
-TIPOS = {"ENTERO", "DECIMAL", "TEXTO", "BOOLEANO"}
-
-RESERVADAS = {
-    # Palabras de Tuquiquilulu.
-    "PILLE", "COMO", "PILAS",
-
-    # Palabras de control solicitadas en la guía.
-    "if", "else", "while",
-}
-
-BOOLEANOS = {
-    # Valores de Tuquiquilulu.
-    "SISAS", "NONAS", "MELO", "PAILA",
-    # Valores solicitados en la guía.
-    "true", "false",
-}
-
-INICIO_COMENTARIO = "OJO:"
-
-INICIO_COMENTARIO_BLOQUE = "/*"
-FIN_COMENTARIO_BLOQUE = "*/"
-
-# Operadores de un carácter.
-OPERADORES = {"+", "-", "*", "<", ">"}
-
-# Operadores de dos caracteres.
-OPERADORES_DOBLES = {"==", "!=", "<=", ">="}
-
-# Delimitadores y signos de puntuación de la tarea 8.
-SIMBOLOS = {"(", ")", "{", "}", ",", ".", ";"}
-
-def tokenizar_con_clase(texto):
-    """Devuelve tokens o lanza SyntaxError ante el primer error léxico.
-    """
-    tokens = []
-    i = 0
-    linea = 1
-    columna = 1
-
-    while i < len(texto):
-        c = texto[i]
-
-        # 1. Ignorar espacios y tabulaciones.
-        if c in " \t":
-            i += 1
-            columna += 1
-
-        # 2. Avanzar de línea y reiniciar la columna.
-        elif c == "\n":
-            i += 1
-            linea += 1
-            columna = 1
-
-        # 3. Ignorar el comentario, dejando el salto para el caso anterior.
-        # Reconocer e ignorar comentarios de bloque.
-        elif texto.startswith(INICIO_COMENTARIO_BLOQUE, i):
-            linea_inicio = linea
-            columna_inicio = columna
-
-            # Consumir los dos caracteres de apertura: /*
-            i += 2
-            columna += 2
-
-            # Recorrer el contenido hasta encontrar el cierre.
-            while (
-                i < len(texto)
-                and not texto.startswith(FIN_COMENTARIO_BLOQUE, i)
-            ):
-                if texto[i] == "\n":
-                    i += 1
-                    linea += 1
-                    columna = 1
-                else:
-                    i += 1
-                    columna += 1
-
-            # Si llegamos al final, faltó cerrar el comentario.
-            if i >= len(texto):
-                raise SyntaxError(
-                    "Comentario de bloque sin cerrar "
-                    f"en línea {linea_inicio}, "
-                    f"columna {columna_inicio}"
-                )
-
-            # Consumir los dos caracteres de cierre: */
-            i += 2
-            columna += 2
-
-        elif texto.startswith(INICIO_COMENTARIO, i):
-            while i < len(texto) and texto[i] != "\n":
-                i += 1
-                columna += 1
-
-        # 4. Leer un número entero o decimal.
-        elif c.isdigit():
-            inicio = i
-            linea_inicio = linea
-            columna_inicio = columna
-
-            while i < len(texto) and texto[i].isdigit():
-                i += 1
-                columna += 1
-
-            if i < len(texto) and texto[i] == ".":
-                # Reportar el punto problemático, no el inicio del número.
-                # Ejemplo: 25..55 falla en la columna 3.
-                if i + 1 >= len(texto) or not texto[i + 1].isdigit():
-                    raise SyntaxError(
-                        f"Decimal mal formado en línea {linea}, columna {columna}"
-                    )
-
-                i += 1
-                columna += 1
-
-                while i < len(texto) and texto[i].isdigit():
-                    i += 1
-                    columna += 1
-
-                # Un segundo punto tampoco pertenece a un decimal válido.
-                if i < len(texto) and texto[i] == ".":
-                    raise SyntaxError(
-                        f"Decimal mal formado en línea {linea}, columna {columna}"
-                    )
-
-            tokens.append(Token("NUMERO", texto[inicio:i], linea_inicio, columna_inicio))
-
-        # 5. Leer texto entre comillas dobles, en una sola línea.
-        # Esta versión no implementa secuencias de escape.
-        elif c == '"':
-            inicio = i
-            linea_inicio = linea
-            columna_inicio = columna
-            i += 1
-            columna += 1
-
-            while i < len(texto) and texto[i] != '"' and texto[i] != "\n":
-                i += 1
-                columna += 1
-
-            if i >= len(texto) or texto[i] == "\n":
-                raise SyntaxError(
-                    "Cadena de texto sin cerrar "
-                    f"en línea {linea_inicio}, columna {columna_inicio}"
-                )
-
-            i += 1
-            columna += 1
-            tokens.append(Token("TEXTO", texto[inicio:i], linea_inicio, columna_inicio))
-
-        # 6. Leer la palabra completa antes de clasificarla.
-        elif c.isalpha():
-            inicio = i
-            columna_inicio = columna
-
-            while (i < len(texto) and (texto[i].isalnum() or texto[i] == "_")):
-                i += 1
-                columna += 1
-
-            palabra = texto[inicio:i]
-
-            if palabra in TIPOS:
-                tipo = "TIPO"
-
-            elif palabra in BOOLEANOS:
-                tipo = "BOOLEANO"
-
-            elif palabra in RESERVADAS:
-                tipo = "RESERVADA"
-
-            elif palabra == "LISTO":
-                tipo = "FIN_INSTRUCCION"
-
-            else:
-                tipo = "IDENTIFICADOR"
-
-            tokens.append(Token(tipo, palabra, linea, columna_inicio))
-
-        # 7. Reconocer operadores de dos caracteres.
-        elif texto[i:i + 2] in OPERADORES_DOBLES:
-            operador = texto[i:i + 2]
-
-            tokens.append(Token("OPERADOR", operador, linea, columna))
-
-            i += 2
-            columna += 2
-
-        # 8. Reconocer la asignación.
-        elif c == "=":
-            tokens.append(Token("ASIGNACION", c, linea, columna))
-            i += 1
-            columna += 1
-
-        # 9. Reconocer operadores de un carácter.
-        elif c in OPERADORES:
-            tokens.append(Token("OPERADOR", c, linea, columna))
-            i += 1
-            columna += 1
-
-        # 10. Reconocer delimitadores
-        elif c in SIMBOLOS:
-            tokens.append(Token("SIMBOLO", c, linea, columna))
-            i += 1
-            columna += 1
-
-        # 11. Detenerse ante un carácter no reconocido.
-        else:
-            raise SyntaxError(
-                f"Error léxico: carácter inesperado '{c}' "
-                f"en línea {linea}, columna {columna}"
-            )
-
-    # El recorrido terminó: señalar el final de la entrada.
-    tokens.append(Token("EOF", "", linea, columna))
-
-    return tokens
-
+from tuquiquilulu.tokens import Token, ErrorLexico
+from tuquiquilulu.lexer import tokenizar
 
 # Las funciones siguientes solo muestran y comparan las pruebas.
 # Las salidas esperadas se escriben manualmente, antes de ejecutar el lexer.
@@ -250,10 +19,10 @@ def probar_caso(nombre, codigo, esperado):
 
     print("\nSalida real:")
     try:
-        resultado = tokenizar_con_clase(codigo)
+        resultado = tokenizar(codigo)
         for token in resultado:
             print(token)
-    except SyntaxError as error:
+    except ErrorLexico as error:
         resultado = str(error)
         print(resultado)
 
@@ -330,7 +99,7 @@ if __name__ == "__main__":
     resultados.append(probar_caso(
         "CASO INVÁLIDO 1 · Carácter desconocido",
         "PILLE puntos COMO ENTERO = 100 @ LISTO",
-        "Error léxico: carácter inesperado '@' en línea 1, columna 32",
+        "Error léxico en línea 1, columna 32: carácter '@' no reconocido",
     ))
 
     # Usamos un decimal mal formado: '=' sí es válido en nuestro lenguaje.
@@ -338,7 +107,7 @@ if __name__ == "__main__":
     resultados.append(probar_caso(
         "CASO INVÁLIDO 2 · Decimal mal formado",
         "PILLE tiempo COMO DECIMAL = 3.4.5 LISTO",
-        "Decimal mal formado en línea 1, columna 32",
+        "Error léxico en línea 1, columna 32: decimal mal formado",
     ))
 
     # Aquí la posición señala la comilla de apertura del texto sin cerrar.
@@ -346,7 +115,7 @@ if __name__ == "__main__":
         "CASO INVÁLIDO 3 · Texto sin cerrar en la segunda línea",
         'PILLE puntos COMO ENTERO = 0 LISTO\n'
         'PILLE categoria COMO TEXTO = "Historia LISTO',
-        "Cadena de texto sin cerrar en línea 2, columna 30",
+        "Error léxico en línea 2, columna 30: cadena de texto sin cerrar",
     ))
 
     # Tarea 8: paréntesis, operadores y punto y coma.
@@ -457,7 +226,7 @@ if __name__ == "__main__":
     resultados.append(probar_caso(
         "TAREA 9 · Exclamación sin igual",
         "x ! 5",
-        "Error léxico: carácter inesperado '!' en línea 1, columna 3",
+        "Error léxico en línea 1, columna 3: carácter '!' no reconocido",
     ))
 
     resultados.append(probar_caso(
@@ -560,7 +329,7 @@ if __name__ == "__main__":
     resultados.append(probar_caso(
         "TAREA 11 · Comentario sin cerrar",
         "a\n  /* sin cerrar\ncontinua",
-        "Comentario de bloque sin cerrar en línea 2, columna 3",
+        "Error léxico en línea 2, columna 3: comentario de bloque sin cerrar",
     ))
 
     resultados.append(probar_caso(
@@ -588,7 +357,44 @@ if __name__ == "__main__":
         ],
     ))
 
+    print("\n" + "=" * 60)
+    print("TAREA 14 · Datos del error por separado")
 
+    codigo = "x\n  @"
+
+    esperado = (
+        "carácter '@' no reconocido",
+        2,
+        3,
+    )
+
+    print("\nEntrada:")
+    print(codigo)
+
+    print("\nSalida esperada (mensaje, línea, columna):")
+    print(esperado)
+
+    try:
+        tokenizar(codigo)
+
+    except ErrorLexico as error:
+        resultado = (
+            error.mensaje,
+            error.linea,
+            error.columna,
+        )
+
+        print("\nSalida real:")
+        print(resultado)
+
+        coincide = resultado == esperado
+
+    else:
+        print("\nSalida real: no se produjo el error esperado.")
+        coincide = False
+
+    print("\n¿Coinciden?:", "SÍ" if coincide else "NO")
+    resultados.append(coincide)
 
     print(f"\nResultado: {sum(resultados)}/{len(resultados)} pruebas correctas.")
     if not all(resultados):
