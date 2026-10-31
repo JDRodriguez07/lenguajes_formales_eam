@@ -33,7 +33,7 @@ OPERADORES_DOBLES = {"==", "!=", "<=", ">="}
 # Delimitadores y signos de puntuación de la tarea 8.
 SIMBOLOS = {"(", ")", "{", "}", ",", ".", ";"}
 
-def tokenizar_comentarios_bloque(texto):
+def tokenizar_fin_archivo(texto):
     """Devuelve tokens o lanza SyntaxError ante el primer error léxico.
     """
     tokens = []
@@ -213,6 +213,9 @@ def tokenizar_comentarios_bloque(texto):
                 f"en línea {linea}, columna {columna}"
             )
 
+    # El recorrido terminó: señalar el final de la entrada.
+    tokens.append(("EOF", "", linea, columna))
+
     return tokens
 
 
@@ -232,7 +235,7 @@ def probar_caso(nombre, codigo, esperado):
 
     print("\nSalida real:")
     try:
-        resultado = tokenizar_comentarios_bloque(codigo)
+        resultado = tokenizar_fin_archivo(codigo)
         for token in resultado:
             print(token)
     except SyntaxError as error:
@@ -261,6 +264,7 @@ if __name__ == "__main__":
             ("ASIGNACION", "=", 1, 21),
             ("NUMERO", "5", 1, 23),
             ("FIN_INSTRUCCION", "LISTO", 1, 25),
+            ("EOF", "", 1, 30),
         ],
     ))
 
@@ -280,6 +284,7 @@ if __name__ == "__main__":
             ("OPERADOR", "*", 1, 35),
             ("NUMERO", "2", 1, 36),
             ("FIN_INSTRUCCION", "LISTO", 1, 38),
+            ("EOF", "", 1, 43),
         ],
     ))
 
@@ -303,6 +308,7 @@ if __name__ == "__main__":
             ("ASIGNACION", "=", 2, 27),
             ("NUMERO", "3.5", 2, 29),
             ("FIN_INSTRUCCION", "LISTO", 2, 33),
+            ("EOF", "", 2, 38),
         ],
     ))
 
@@ -341,6 +347,7 @@ if __name__ == "__main__":
             ("OPERADOR", "*", 1, 6),
             ("NUMERO", "2", 1, 7),
             ("SIMBOLO", ";", 1, 8),
+            ("EOF", "", 1, 9),
         ],
     ))
 
@@ -353,6 +360,7 @@ if __name__ == "__main__":
             ("SIMBOLO", ".", 1, 7),
             ("IDENTIFICADOR", "out", 1, 8),
             ("NUMERO", "3.14", 1, 12),
+            ("EOF", "", 1, 16),
         ],
     ))
 
@@ -366,6 +374,7 @@ if __name__ == "__main__":
             ("SIMBOLO", ",", 1, 3),
             ("IDENTIFICADOR", "b", 1, 4),
             ("SIMBOLO", "}", 1, 5),
+            ("EOF", "", 1, 6),
         ],
     ))
 
@@ -388,6 +397,8 @@ if __name__ == "__main__":
             ("IDENTIFICADOR", "a", 1, 16),
             ("OPERADOR", ">=", 1, 17),
             ("IDENTIFICADOR", "b", 1, 19),
+
+            ("EOF", "", 1, 20),
         ],
     ))
 
@@ -401,6 +412,7 @@ if __name__ == "__main__":
             ("IDENTIFICADOR", "a", 1, 5),
             ("OPERADOR", ">", 1, 6),
             ("IDENTIFICADOR", "b", 1, 7),
+            ("EOF", "", 1, 8),
         ],
     ))
 
@@ -411,6 +423,7 @@ if __name__ == "__main__":
             ("IDENTIFICADOR", "x", 1, 1),
             ("OPERADOR", "==", 1, 3),
             ("NUMERO", "5", 1, 6),
+            ("EOF", "", 1, 7),
         ],
     ))
 
@@ -422,6 +435,7 @@ if __name__ == "__main__":
             ("ASIGNACION", "=", 1, 3),
             ("ASIGNACION", "=", 1, 5),
             ("NUMERO", "5", 1, 7),
+            ("EOF", "", 1, 8),
         ],
     ))
 
@@ -438,6 +452,7 @@ if __name__ == "__main__":
             ("RESERVADA", "if", 1, 1),
             ("RESERVADA", "else", 1, 4),
             ("RESERVADA", "while", 1, 9),
+            ("EOF", "", 1, 14),
         ],
     ))
 
@@ -450,6 +465,7 @@ if __name__ == "__main__":
             ("IDENTIFICADOR", "while_x", 1, 9),
             ("RESERVADA", "PILAS", 1, 17),
             ("IDENTIFICADOR", "PILAS_extra", 1, 23),
+            ("EOF", "", 1, 34),
         ],
     ))
 
@@ -463,6 +479,7 @@ if __name__ == "__main__":
             ("BOOLEANO", "PAILA", 1, 18),
             ("BOOLEANO", "true", 1, 24),
             ("BOOLEANO", "false", 1, 29),
+            ("EOF", "", 1, 34),
         ],
     ))
 
@@ -474,6 +491,7 @@ if __name__ == "__main__":
             ("BOOLEANO", "SISAS", 1, 10),
             ("IDENTIFICADOR", "SISAS_extra", 1, 16),
             ("IDENTIFICADOR", "true_x", 1, 28),
+            ("EOF", "", 1, 34),
         ],
     ))
 
@@ -484,6 +502,7 @@ if __name__ == "__main__":
             ("IDENTIFICADOR", "a", 1, 1),
             ("OPERADOR", "+", 1, 12),
             ("IDENTIFICADOR", "b", 1, 13),
+            ("EOF", "", 1, 14),
         ],
     ))
 
@@ -509,6 +528,8 @@ if __name__ == "__main__":
             ("ASIGNACION", "=", 4, 21),
             ("NUMERO", "2", 4, 23),
             ("FIN_INSTRUCCION", "LISTO", 4, 25),
+
+            ("EOF", "", 4, 30),
         ],
     ))
 
@@ -517,6 +538,7 @@ if __name__ == "__main__":
         '"/* hola */"',
         [
             ("TEXTO", '"/* hola */"', 1, 1),
+            ("EOF", "", 1, 13),
         ],
     ))
 
@@ -525,6 +547,33 @@ if __name__ == "__main__":
         "a\n  /* sin cerrar\ncontinua",
         "Comentario de bloque sin cerrar en línea 2, columna 3",
     ))
+
+    resultados.append(probar_caso(
+        "TAREA 12 · Entrada vacía",
+        "",
+        [
+            ("EOF", "", 1, 1),
+        ],
+    ))
+
+    resultados.append(probar_caso(
+        "TAREA 12 · Salto de línea al final",
+        "x\n",
+        [
+            ("IDENTIFICADOR", "x", 1, 1),
+            ("EOF", "", 2, 1),
+        ],
+    ))
+
+    resultados.append(probar_caso(
+        "TAREA 12 · Solo un comentario",
+        "/* hola */",
+        [
+            ("EOF", "", 1, 11),
+        ],
+    ))
+
+
 
     print(f"\nResultado: {sum(resultados)}/{len(resultados)} pruebas correctas.")
     if not all(resultados):
