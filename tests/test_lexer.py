@@ -393,6 +393,33 @@ if __name__ == "__main__":
         print("\nSalida real: no se produjo el error esperado.")
         coincide = False
 
+
+    resultados.append(probar_caso(
+        "TAREA 16 · Primeras tres lineas del programa",
+        "OJO: Programa de demostracion\n"
+        "PILLE puntos COMO ENTERO = 2 LISTO\n"
+        "PILLE precio COMO DECIMAL = 3.14 LISTO\n",
+        [
+            Token("RESERVADA", "PILLE", 2, 1),
+            Token("IDENTIFICADOR", "puntos", 2, 7),
+            Token("RESERVADA", "COMO", 2, 14),
+            Token("TIPO", "ENTERO", 2, 19),
+            Token("ASIGNACION", "=", 2, 26),
+            Token("NUMERO", "2", 2, 28),
+            Token("FIN_INSTRUCCION", "LISTO", 2, 30),
+
+            Token("RESERVADA", "PILLE", 3, 1),
+            Token("IDENTIFICADOR", "precio", 3, 7),
+            Token("RESERVADA", "COMO", 3, 14),
+            Token("TIPO", "DECIMAL", 3, 19),
+            Token("ASIGNACION", "=", 3, 27),
+            Token("NUMERO", "3.14", 3, 29),
+            Token("FIN_INSTRUCCION", "LISTO", 3, 34),
+
+            Token("EOF", "", 4, 1),
+        ],
+    ))
+
     print("\n¿Coinciden?:", "SÍ" if coincide else "NO")
     resultados.append(coincide)
 

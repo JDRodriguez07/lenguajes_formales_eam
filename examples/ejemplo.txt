@@ -1,0 +1,15 @@
+OJO: Programa de demostracion
+PILLE puntos COMO ENTERO = 2 LISTO
+PILLE precio COMO DECIMAL = 3.14 LISTO
+PILLE nombre COMO TEXTO = "Ana" LISTO
+PILLE activo COMO BOOLEANO = SISAS LISTO
+/* Ajustamos el puntaje
+y comprobamos las condiciones */
+puntos = puntos+5*2 LISTO
+if (puntos >= 10) {
+activo = NONAS LISTO
+} else {
+puntos = puntos-1 LISTO
+}
+while (puntos < 20) { puntos = puntos+1 LISTO }
+PILAS activo DE UNA puntos = puntos+1 LISTO
