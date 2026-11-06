@@ -393,6 +393,9 @@ if __name__ == "__main__":
         print("\nSalida real: no se produjo el error esperado.")
         coincide = False
 
+    print("\n¿Coinciden?:", "SÍ" if coincide else "NO")
+    resultados.append(coincide)
+
 
     resultados.append(probar_caso(
         "TAREA 16 · Primeras tres lineas del programa",
@@ -419,9 +422,6 @@ if __name__ == "__main__":
             Token("EOF", "", 4, 1),
         ],
     ))
-
-    print("\n¿Coinciden?:", "SÍ" if coincide else "NO")
-    resultados.append(coincide)
 
     print(f"\nResultado: {sum(resultados)}/{len(resultados)} pruebas correctas.")
     if not all(resultados):

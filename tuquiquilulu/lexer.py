@@ -58,8 +58,8 @@ def tokenizar(texto):
             linea += 1
             columna = 1
 
-        # 3. Ignorar el comentario, dejando el salto para el caso anterior.
-        # Reconocer e ignorar comentarios de bloque.
+        # 3. Ignorar comentarios de bloque y contar sus saltos de línea.
+        # Ignorar el comentario de una línea sin consumir el salto.
         elif texto.startswith(INICIO_COMENTARIO_BLOQUE, i):
             linea_inicio = linea
             columna_inicio = columna
