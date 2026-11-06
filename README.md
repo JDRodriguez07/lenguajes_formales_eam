@@ -209,6 +209,7 @@ Están documentadas con su significado y su categoría en `docs/palabras_reserva
 | `tests/test_lexer.py` | Casos de prueba con entradas, resultados esperados y comparación con los resultados reales. |
 | `examples/programa_valido.txt` | Entrada válida para comprobar la lectura de archivos y la tabla de tokens. |
 | `examples/programa_invalido.txt` | Entrada con un error léxico para comprobar su ubicación y mensaje. |
+| `examples/ejemplo.txt` | Programa de demostración del lexer con comentarios, decimales, cadenas, booleanos y operadores. |
 | `docs/reglas.txt` | Quince reglas del juego en lenguaje natural, Tuquiquilulu y representación simbólica. |
 | `docs/palabras_reservadas.md` | Documentación del vocabulario y los símbolos del lenguaje. |
 | `historico/` | Ejercicios y entregables anteriores que conservan la evolución del proyecto. |
@@ -240,6 +241,16 @@ Ejecutar las pruebas:
 ```bash
 python -m tests.test_lexer
 ```
+
+Analizar el programa de demostración:
+
+```bash
+python main.py examples/ejemplo.txt
+```
+
+El ejemplo utiliza el vocabulario de Tuquiquilulu y las palabras de
+control adicionales de la guía. Su tokenización no implica una
+validación sintáctica ni la ejecución del programa.
 
 El analizador muestra la línea, columna, tipo y texto de cada token,
 incluido el token final `EOF`. Si encuentra un error léxico, muestra
