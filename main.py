@@ -1,13 +1,14 @@
-"""Lee un archivo de código y muestra sus tokens."""
+"""Lee un archivo y recorre sus tokens mediante el Parser."""
 
 import sys
 
 from tuquiquilulu.lexer import tokenizar
+from tuquiquilulu.parser import Parser
 from tuquiquilulu.tokens import ErrorLexico
 
 
 def main():
-    # Debemos recibir el nombre del programa y una ruta.
+    # Recibir el nombre del programa y la ruta del archivo.
     if len(sys.argv) != 2:
         print("Uso: python main.py archivo.txt")
         return 1
@@ -15,44 +16,45 @@ def main():
     ruta = sys.argv[1]
 
     try:
-        # Leer el archivo como texto y cerrarlo al salir del bloque.
+        # Leer el archivo y cerrarlo al salir del bloque.
         with open(ruta, encoding="utf-8") as archivo:
             texto = archivo.read()
 
-        # Obtener todos los tokens antes de imprimir la tabla.
+        # El lexer transforma los caracteres en objetos Token.
         tokens = tokenizar(texto)
+
+        # El parser guarda los tokens y comienza en la posición cero.
+        parser = Parser(tokens)
+
+        # Mostrar cada token y avanzar hasta llegar a EOF.
+        while parser.actual().tipo != "EOF":
+            print(parser.actual())
+            parser.avanzar()
+
+        # EOF también debe aparecer en la salida.
+        print(parser.actual())
 
     except ErrorLexico as error:
         print(error)
+        print(
+            f"linea = {error.linea}, "
+            f"columna = {error.columna}"
+        )
         return 1
 
     except UnicodeDecodeError:
-        print("No se pudo leer el archivo: guárdalo con codificación UTF-8.")
+        print(
+            "No se pudo leer el archivo: "
+            "guárdalo con codificación UTF-8."
+        )
         return 1
 
     except OSError as error:
-        print(f"No se pudo abrir o leer el archivo '{ruta}': {error}")
-        return 1
-
-    # Elegir un ancho suficiente para cada columna.
-    ancho_linea = max(len("LINEA"), max(len(str(t.linea)) for t in tokens))
-    ancho_columna = max(len("COL"), max(len(str(t.columna)) for t in tokens))
-    ancho_tipo = max(len("TIPO"), max(len(t.tipo) for t in tokens))
-
-    print(
-        f"{'LINEA':<{ancho_linea}}  "
-        f"{'COL':<{ancho_columna}}  "
-        f"{'TIPO':<{ancho_tipo}}  "
-        "TEXTO"
-    )
-
-    for token in tokens:
         print(
-            f"{token.linea:<{ancho_linea}}  "
-            f"{token.columna:<{ancho_columna}}  "
-            f"{token.tipo:<{ancho_tipo}}  "
-            f"{token.texto}"
+            f"No se pudo abrir o leer el archivo "
+            f"'{ruta}': {error}"
         )
+        return 1
 
     return 0
 
