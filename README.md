@@ -201,10 +201,12 @@ Están documentadas con su significado y su categoría en `docs/palabras_reserva
 
 | Archivo o carpeta | Descripción |
 |---|---|
-| `main.py` | Punto de entrada: recibe la ruta de un archivo, ejecuta el lexer y muestra la tabla de tokens o el mensaje de error. |
+| `main.py` | Lee un archivo, ejecuta el lexer y recorre los tokens mediante Parser. Imprime cada token o el error léxico con su línea y columna por separado. |
 | `tuquiquilulu/__init__.py` | Identifica el paquete del analizador. |
 | `tuquiquilulu/lexer.py` | Configuración del vocabulario y función `tokenizar`, encargada del análisis léxico. |
 | `tuquiquilulu/tokens.py` | Clases `Token` y `ErrorLexico`. |
+| `tuquiquilulu/parser.py` | Prototipo de Parser: guarda los tokens y su posición, permite consultar el token actual y avanzar sin sobrepasar EOF. |
+| `tests/test_parser.py` | Pruebas de posiciones independientes, consulta sin movimiento y recorrido completo con protección de EOF. |
 | `tests/__init__.py` | Identifica el paquete de pruebas. |
 | `tests/test_lexer.py` | Casos de prueba con entradas, resultados esperados y comparación con los resultados reales. |
 | `examples/programa_valido.txt` | Entrada válida para comprobar la lectura de archivos y la tabla de tokens. |
@@ -248,13 +250,25 @@ Analizar el programa de demostración:
 python main.py examples/ejemplo.txt
 ```
 
+Ejecutar las pruebas del prototipo de parser:
+
+```bash
+python -m tests.test_parser
+```
+
 El ejemplo utiliza el vocabulario de Tuquiquilulu y las palabras de
-control adicionales de la guía. Su tokenización no implica una
-validación sintáctica ni la ejecución del programa.
+control adicionales de la guía.
 
-El analizador muestra la línea, columna, tipo y texto de cada token,
-incluido el token final `EOF`. Si encuentra un error léxico, muestra
-su mensaje y posición sin imprimir una traza de Python.
+El lexer transforma la entrada en objetos Token. Después, main.py crea
+un objeto Parser y recorre los tokens hasta EOF, imprimiendo también
+ese token final.
 
-El lexer reconoce las piezas de la entrada; todavía no valida la
-estructura sintáctica completa ni ejecuta las instrucciones.
+Cada token se muestra con su tipo, texto, línea y columna, en un formato
+legible como NUMERO('5') en 1:9. Si ocurre un error léxico, se imprime
+el mensaje completo y, en otra línea, sus atributos linea y columna,
+sin mostrar la traza de Python.
+
+Este Parser es un prototipo de recorrido: conserva una posición por
+objeto, permite consultar el token actual sin avanzar y avanzar sin
+sobrepasar EOF. Todavía no valida las reglas de la gramática, construye
+un árbol sintáctico ni ejecuta las instrucciones.
