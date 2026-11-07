@@ -47,3 +47,46 @@ if __name__ == "__main__":
 
     if not coincide:
         raise SystemExit(1)
+
+    print("\n" + "=" * 60)
+    print("PARSER · Consultar el token actual no avanza")
+
+    entrada = "puntos = 10"
+
+    print("\nEntrada:")
+    print(entrada)
+
+    parser = Parser(tokenizar(entrada))
+
+    # Consultamos dos veces sin llamar a avanzar().
+    primera_consulta = parser.actual()
+    segunda_consulta = parser.actual()
+
+    esperado = [
+        Token("IDENTIFICADOR", "puntos", 1, 1),
+        Token("IDENTIFICADOR", "puntos", 1, 1),
+        0,
+    ]
+
+    resultado = [
+        primera_consulta,
+        segunda_consulta,
+        parser.posicion,
+    ]
+
+    print("\nSalida esperada:")
+    print("Primera consulta:", esperado[0])
+    print("Segunda consulta:", esperado[1])
+    print("Posición final:", esperado[2])
+
+    print("\nSalida real:")
+    print("Primera consulta:", resultado[0])
+    print("Segunda consulta:", resultado[1])
+    print("Posición final:", resultado[2])
+
+    coincide = resultado == esperado
+
+    print("\n¿Coinciden?:", "SÍ" if coincide else "NO")
+
+    if not coincide:
+        raise SystemExit(1)
