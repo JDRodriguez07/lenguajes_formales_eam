@@ -90,3 +90,62 @@ if __name__ == "__main__":
 
     if not coincide:
         raise SystemExit(1)
+
+    print("\n" + "=" * 60)
+    print("PARSER · Recorrido completo y protección de EOF")
+
+    entrada = "x = 5"
+
+    print("\nEntrada:")
+    print(entrada)
+
+    parser = Parser(tokenizar(entrada))
+
+    esperado = [
+        Token("IDENTIFICADOR", "x", 1, 1),
+        Token("ASIGNACION", "=", 1, 3),
+        Token("NUMERO", "5", 1, 5),
+        Token("EOF", "", 1, 6),
+    ]
+
+    recorrido = []
+
+    # Limitamos los intentos para evitar un ciclo infinito
+    # si avanzar() tuviera un error.
+    for _ in range(len(esperado)):
+        token = parser.actual()
+        recorrido.append(token)
+
+        if token.tipo == "EOF":
+            break
+
+        parser.avanzar()
+
+    # Intentamos avanzar dos veces después del recorrido.
+    parser.avanzar()
+    parser.avanzar()
+
+    print("\nSalida esperada:")
+    for token in esperado:
+        print(token)
+
+    print("Posición final:", 3)
+    print("Token final:", esperado[-1])
+
+    print("\nSalida real:")
+    for token in recorrido:
+        print(token)
+
+    print("Posición final:", parser.posicion)
+    print("Token final:", parser.actual())
+
+    coincide = (
+        recorrido == esperado
+        and parser.posicion == 3
+        and parser.actual() == esperado[-1]
+    )
+
+    print("\n¿Coinciden?:", "SÍ" if coincide else "NO")
+
+    if not coincide:
+        raise SystemExit(1)
