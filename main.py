@@ -1,10 +1,11 @@
-"""Lee un archivo y recorre sus tokens mediante el Parser."""
+"""Lee un archivo y muestra el árbol construido por el parser."""
 
 import sys
 
 from tuquiquilulu.lexer import tokenizar
 from tuquiquilulu.parser import Parser
-from tuquiquilulu.tokens import ErrorLexico
+from tuquiquilulu.tokens import ErrorDeLenguaje
+from tuquiquilulu.arbol import mostrar_arbol
 
 
 def main():
@@ -20,21 +21,11 @@ def main():
         with open(ruta, encoding="utf-8") as archivo:
             texto = archivo.read()
 
-        # El lexer transforma los caracteres en objetos Token.
-        tokens = tokenizar(texto)
+        # Texto -> tokens -> árbol. Todavía no se ejecutan instrucciones.
+        programa = Parser(tokenizar(texto)).programa()
+        mostrar_arbol(programa)
 
-        # El parser guarda los tokens y comienza en la posición cero.
-        parser = Parser(tokens)
-
-        # Mostrar cada token y avanzar hasta llegar a EOF.
-        while parser.actual().tipo != "EOF":
-            print(parser.actual())
-            parser.avanzar()
-
-        # EOF también debe aparecer en la salida.
-        print(parser.actual())
-
-    except ErrorLexico as error:
+    except ErrorDeLenguaje as error:
         print(error)
         print(
             f"linea = {error.linea}, "

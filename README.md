@@ -77,9 +77,9 @@ Las mismas 15 reglas escritas en el lenguaje y en su forma simbólica están en
 | nombre_jugador         | TEXTO              | str                 | "anggy"           |
 | categoria              | TEXTO              | str                 | "deportes"        |
 
-## Sintaxis del lenguaje
+## Diseño del lenguaje (incluye construcciones aún pendientes)
 
-Tuquiquilulu permite declarar variables y escribir reglas condicionales.
+El diseño de Tuquiquilulu incluye declaraciones y reglas condicionales. El parser del 14 de noviembre implementa declaraciones, asignaciones y expresiones; las reglas condicionales se incorporarán después.
 
 ### Declaración de variables
 
@@ -201,15 +201,17 @@ Están documentadas con su significado y su categoría en `docs/palabras_reserva
 
 | Archivo o carpeta | Descripción |
 |---|---|
-| `main.py` | Lee un archivo, ejecuta el lexer y recorre los tokens mediante Parser. Imprime cada token o el error léxico con su línea y columna por separado. |
+| `main.py` | Lee un archivo, construye y muestra el árbol; presenta errores léxicos y sintácticos. |
 | `tuquiquilulu/__init__.py` | Identifica el paquete del analizador. |
 | `tuquiquilulu/lexer.py` | Configuración del vocabulario y función `tokenizar`, encargada del análisis léxico. |
-| `tuquiquilulu/tokens.py` | Clases `Token` y `ErrorLexico`. |
-| `tuquiquilulu/parser.py` | Prototipo de Parser: guarda los tokens y su posición, permite consultar el token actual y avanzar sin sobrepasar EOF. |
+| `tuquiquilulu/tokens.py` | `Token`, `ErrorDeLenguaje`, `ErrorLexico` y `ErrorSintactico`. |
+| `tuquiquilulu/parser.py` | Gramática EBNF y parser por descenso recursivo. |
+| `tuquiquilulu/arbol.py` | Nodos con tokens y funciones para representar el árbol. |
+| `tests/test_parser_arbol.py` | 19 casos de sintaxis, árboles, posiciones y métodos auxiliares. |
 | `tests/test_parser.py` | Pruebas de posiciones independientes, consulta sin movimiento y recorrido completo con protección de EOF. |
 | `tests/__init__.py` | Identifica el paquete de pruebas. |
 | `tests/test_lexer.py` | Casos de prueba con entradas, resultados esperados y comparación con los resultados reales. |
-| `examples/programa_valido.txt` | Entrada válida para comprobar la lectura de archivos y la tabla de tokens. |
+| `examples/programa_valido.txt` | Entrada válida para comprobar la lectura de archivos y el árbol de una declaración. |
 | `examples/programa_invalido.txt` | Entrada con un error léxico para comprobar su ubicación y mensaje. |
 | `examples/ejemplo.txt` | Programa de demostración del lexer con comentarios, decimales, cadenas, booleanos y operadores. |
 | `docs/reglas.txt` | Quince reglas del juego en lenguaje natural, Tuquiquilulu y representación simbólica. |
@@ -220,55 +222,70 @@ Están documentadas con su significado y su categoría en `docs/palabras_reserva
 
 La carpeta `historico/` contiene `paso1.py`, `entregable_uno.py`,
 `entregable_dos.py` y `parcial.py`. La implementación actual está en
-`tuquiquilulu/` y sus pruebas están en `tests/test_lexer.py`.
+`tuquiquilulu/` y sus pruebas están en `tests/`.
 
-## Ejecución
+## Entrega del 14 de noviembre: parser y árbol
 
-Ejecutar los siguientes comandos desde la raíz del proyecto.
-
-Analizar un archivo válido:
-
-```bash
-python main.py examples/programa_valido.txt
-```
-
-Comprobar el reporte de un error léxico:
-
-```bash
-python main.py examples/programa_invalido.txt
-```
-
-Ejecutar las pruebas:
+Requiere Python 3.10 o superior. Ejecutar desde la raíz del repositorio.
 
 ```bash
 python -m tests.test_lexer
-```
-
-Analizar el programa de demostración:
-
-```bash
-python main.py examples/ejemplo.txt
-```
-
-Ejecutar las pruebas del prototipo de parser:
-
-```bash
 python -m tests.test_parser
+python -m tests.test_parser_arbol
+python main.py examples/arbol_declaraciones.txt
+python main.py examples/arbol_precedencia.txt
+python main.py examples/arbol_resta.txt
+python main.py examples/error_falta_listo.txt
+python main.py examples/error_operadores.txt
+python main.py examples/error_parentesis.txt
 ```
 
-El ejemplo utiliza el vocabulario de Tuquiquilulu y las palabras de
-control adicionales de la guía.
+Resultados: 27 pruebas del lexer, 3 del recorrido original y 19 del parser con
+árbol. Cada caso muestra entrada, salida esperada, salida real y coincidencia.
+Los ejemplos inválidos terminan con código de salida 1: es el comportamiento esperado.
 
-El lexer transforma la entrada en objetos Token. Después, main.py crea
-un objeto Parser y recorre los tokens hasta EOF, imprimiendo también
-ese token final.
+### Gramática implementada en EBNF
 
-Cada token se muestra con su tipo, texto, línea y columna, en un formato
-legible como NUMERO('5') en 1:9. Si ocurre un error léxico, se imprime
-el mensaje completo y, en otra línea, sus atributos linea y columna,
-sin mostrar la traza de Python.
+```ebnf
+programa    ::= instruccion* EOF
+instruccion ::= declaracion | asignacion
+declaracion ::= "PILLE" IDENTIFICADOR "COMO" TIPO ("=" expresion)? "LISTO"
+asignacion  ::= IDENTIFICADOR "=" expresion "LISTO"
+expresion   ::= termino (("+" | "-") termino)*
+termino     ::= factor (("*" | "/") factor)*
+factor      ::= NUMERO | TEXTO | BOOLEANO | IDENTIFICADOR | "(" expresion ")"
+```
 
-Este Parser es un prototipo de recorrido: conserva una posición por
-objeto, permite consultar el token actual sin avanzar y avanzar sin
-sobrepasar EOF. Todavía no valida las reglas de la gramática, construye
-un árbol sintáctico ni ejecuta las instrucciones.
+`*` fuera de comillas indica repetición; `?` indica una parte opcional. El `"*"`
+entre comillas es el operador de multiplicación. Se conserva la inicialización
+opcional del diseño original: su nodo tiene `valor=None` y aún no se ejecuta.
+`TEXTO` y `BOOLEANO` aquí son tipos de tokens literales, no los tokens `TIPO`
+que contienen las palabras TEXTO y BOOLEANO en una declaración.
+
+### Qué cambió
+
+- El lexer reconoce `/` después de comprobar los comentarios de bloque.
+- Los errores heredan de `ErrorDeLenguaje`; `main.py` captura esa clase base.
+- `avanzar()` devuelve el token consumido y mantiene la protección de EOF.
+- `esperar()` comprueba tipo y, opcionalmente, texto; consume solo si coincide.
+- Cada regla de la gramática tiene un método que devuelve un nodo.
+- `termino()` agrupa multiplicación/división antes de suma/resta.
+- Los ciclos de `expresion()` y `termino()` agrupan de izquierda a derecha.
+- Los paréntesis hacen que `factor()` vuelva a llamar a `expresion()`.
+- El árbol conserva los tokens y sus posiciones para las fases posteriores.
+
+### Alcance y archivos de ejemplo
+
+`main.py` muestra el árbol, no calcula resultados. No verifica todavía variables
+no declaradas, compatibilidad de tipos ni división por cero. Tampoco reconoce
+condicionales, ciclos, operadores lógicos ni menos unario en el parser.
+Los booleanos se guardan como nodos; su ejecución será parte de una etapa posterior.
+
+`examples/ejemplo.txt` sigue siendo una muestra histórica del lexer y contiene
+instrucciones que este parser aún no admite. Para esta entrega usar los archivos
+`arbol_*.txt`. Los archivos `error_*.txt` demuestran errores sintácticos;
+`programa_invalido.txt` sigue demostrando un error léxico.
+
+La estructura exigida para la entrega final del 23 de noviembre se adaptará después:
+los módulos principales deberán estar en la raíz. Esta etapa conserva el paquete
+`tuquiquilulu` para centrarse en el entregable del 14 y mantener las pruebas anteriores.

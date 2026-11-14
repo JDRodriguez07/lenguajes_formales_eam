@@ -28,7 +28,7 @@ INICIO_COMENTARIO_BLOQUE = "/*"
 FIN_COMENTARIO_BLOQUE = "*/"
 
 # Operadores de un carácter.
-OPERADORES = {"+", "-", "*", "<", ">"}
+OPERADORES = {"+", "-", "*", "/", "<", ">"}
 
 # Operadores de dos caracteres.
 OPERADORES_DOBLES = {"==", "!=", "<=", ">="}
