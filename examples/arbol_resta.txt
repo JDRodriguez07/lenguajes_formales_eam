@@ -1,0 +1,1 @@
+PILLE r COMO ENTERO = 10 - 3 - 2 LISTO

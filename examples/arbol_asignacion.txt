@@ -1,0 +1,2 @@
+PILLE x COMO ENTERO = 1 LISTO
+x = (x + 2) * 3 LISTO
