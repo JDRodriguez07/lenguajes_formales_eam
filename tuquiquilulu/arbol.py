@@ -54,6 +54,17 @@ class Comparacion:
     der: object
 
 @dataclass
+class OperacionLogica:
+    izq: object
+    operador: Token
+    der: object
+
+@dataclass
+class Negacion:
+    operador: Token
+    operando: object
+
+@dataclass
 class Mostrar:
     palabra: Token
     valor: object
@@ -115,6 +126,13 @@ def representar_arbol(nodo, nivel=0):
         hijos = [nodo.condicion, nodo.cuerpo]
     elif isinstance(nodo, OperacionUnaria):
         titulo = f"OperacionUnaria {nodo.operador.texto}"
+        hijos = [nodo.operando]
+    elif isinstance(nodo, OperacionLogica):
+        titulo = f"OperacionLogica {nodo.operador.texto}"
+        hijos = [nodo.izq, nodo.der]
+
+    elif isinstance(nodo, Negacion):
+        titulo = "Negacion"
         hijos = [nodo.operando]
     else:
         raise TypeError(f"Nodo desconocido: {type(nodo).__name__}")

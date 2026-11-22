@@ -14,6 +14,8 @@ RESERVADAS = {
     "if", "else", "while",
 
     "DE", "UNA", "O", "SI", "NO",
+
+    "Y", "ADEMÁS", "PRONTO", "NADA",
 }
 
 BOOLEANOS = {

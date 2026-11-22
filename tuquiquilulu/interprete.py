@@ -14,6 +14,9 @@ from .arbol import (
     Bloque,
     Condicional,
     Mientras,
+    OperacionLogica,
+    Negacion,
+    
 )
 
 from .tokens import ErrorSemantico
@@ -50,6 +53,17 @@ class Interprete:
     def __init__(self):
         # El programa empieza con un entorno global, sin padre.
         self.entorno = Entorno()
+
+    def exigir_booleano(self, valor, operador):
+        """Evita usar números o textos como valores lógicos."""
+        if type(valor) is not bool:
+            raise ErrorSemantico(
+                f"el operador lógico '{operador.texto}' requiere booleanos",
+                operador.linea,
+                operador.columna,
+            )
+
+        return valor
 
     def evaluar(self, nodo):
         """Convierte un nodo de expresión en un valor de Python."""
@@ -118,6 +132,40 @@ class Interprete:
             raise NotImplementedError(
                 f"Operador unario no implementado: "
                 f"{nodo.operador.texto}"
+            )
+
+        if isinstance(nodo, Negacion):
+            valor = self.evaluar(nodo.operando)
+            valor = self.exigir_booleano(valor, nodo.operador)
+
+            return not valor
+
+        if isinstance(nodo, OperacionLogica):
+            izquierdo = self.evaluar(nodo.izq)
+            izquierdo = self.exigir_booleano(
+                izquierdo,
+                nodo.operador,
+            )
+
+            if nodo.operador.texto == "Y":
+                if not izquierdo:
+                    return False
+
+            elif nodo.operador.texto == "O":
+                if izquierdo:
+                    return True
+
+            else:
+                raise NotImplementedError(
+                    f"Operador lógico no implementado: "
+                    f"{nodo.operador.texto}"
+                )
+
+            derecho = self.evaluar(nodo.der)
+
+            return self.exigir_booleano(
+                derecho,
+                nodo.operador,
             )
 
         # Durante el desarrollo, señala los nodos aún no implementados.

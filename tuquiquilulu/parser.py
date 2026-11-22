@@ -9,12 +9,17 @@ declaracion ::= "PILLE" IDENTIFICADOR "COMO" TIPO ("=" expresion)? "LISTO"
 condicional ::= "PILAS" "(" condicion ")" "DE" "UNA" bloque
                 ("O" "SI" "NO" bloque)? "LISTO"
 asignacion  ::= IDENTIFICADOR "=" expresion "LISTO"
-condicion ::= expresion COMPARADOR expresion
-expresion   ::= termino (("+" | "-") termino)*
+condicion   ::= expresion
+expresion   ::= logica_o
 termino     ::= unario (("*" | "/") unario)*
 unario      ::= "-" unario | factor
 factor      ::= NUMERO | TEXTO | BOOLEANO | IDENTIFICADOR | "(" expresion ")"
 mientras    ::= "MIENTRAS" "(" condicion ")" "DE" "UNA" bloque "LISTO"
+logica_o    ::= logica_y ("O" "DE" "PRONTO" logica_y)*
+logica_y    ::= logica_no ("Y" "ADEMÁS" logica_no)*
+logica_no   ::= "NADA" "DE" logica_no | comparacion
+comparacion ::= aritmetica (COMPARADOR aritmetica)?
+aritmetica  ::= termino (("+" | "-") termino)*
 
 "=" es ASIGNACION; "LISTO" es FIN_INSTRUCCION; paréntesis son SIMBOLO.
 PILLE y COMO son RESERVADA. Los signos aritméticos son OPERADOR.
@@ -25,7 +30,7 @@ from .tokens import ErrorSintactico
 from .arbol import (
     Comparacion, Programa, Declaracion, Asignacion, OperacionBinaria,
     Numero, Cadena, Booleano, Variable, Mostrar, Bloque, Condicional,
-    Mientras, OperacionUnaria,
+    Mientras, OperacionUnaria, OperacionLogica, Negacion,
 )
 
 
@@ -174,12 +179,17 @@ class Parser:
 
         return Mostrar(palabra, valor)
 
-    def expresion(self):
+    def aritmetica(self):
         izq = self.termino()
-        while self.actual().tipo == "OPERADOR" and self.actual().texto in ("+", "-"):
+
+        while (
+            self.actual().tipo == "OPERADOR"
+            and self.actual().texto in ("+", "-")
+        ):
             operador = self.avanzar()
             der = self.termino()
             izq = OperacionBinaria(izq, operador, der)
+
         return izq
 
     def termino(self):
@@ -208,16 +218,8 @@ class Parser:
         return self.factor()
 
     def condicion(self):
-        """Reconoce dos expresiones separadas por un comparador."""
-        izquierdo = self.expresion()
-        operador = self.esperar("COMPARADOR")
-        derecho = self.expresion()
-
-        return Comparacion(
-            izquierdo,
-            operador,
-            derecho,
-        )
+        """Reconoce la expresión que el intérprete exigirá como booleana."""
+        return self.expresion()
 
     def factor(self):
         token = self.actual()
@@ -254,4 +256,57 @@ class Parser:
 
         self.esperar("FIN_INSTRUCCION", "LISTO")
 
-        return Mientras(palabra, condicion, cuerpo)    
+        return Mientras(palabra, condicion, cuerpo)  
+
+    def es_reservada(self, palabra):
+        token = self.actual()
+        return token.tipo == "RESERVADA" and token.texto == palabra
+
+    def expresion(self):
+        """Una expresión puede incluir aritmética, comparaciones y lógica."""
+        return self.logica_o()
+
+    def logica_o(self):
+        izq = self.logica_y()
+
+        while self.es_reservada("O"):
+            operador = self.esperar("RESERVADA", "O")
+            self.esperar("RESERVADA", "DE")
+            self.esperar("RESERVADA", "PRONTO")
+
+            der = self.logica_y()
+            izq = OperacionLogica(izq, operador, der)
+
+        return izq
+
+    def logica_y(self):
+        izq = self.logica_no()
+
+        while self.es_reservada("Y"):
+            operador = self.esperar("RESERVADA", "Y")
+            self.esperar("RESERVADA", "ADEMÁS")
+
+            der = self.logica_no()
+            izq = OperacionLogica(izq, operador, der)
+
+        return izq
+
+    def logica_no(self):
+        if self.es_reservada("NADA"):
+            operador = self.esperar("RESERVADA", "NADA")
+            self.esperar("RESERVADA", "DE")
+
+            return Negacion(operador, self.logica_no())
+
+        return self.comparacion()
+
+    def comparacion(self):
+        izq = self.aritmetica()
+
+        if self.actual().tipo == "COMPARADOR":
+            operador = self.avanzar()
+            der = self.aritmetica()
+
+            return Comparacion(izq, operador, der)
+
+        return izq 
