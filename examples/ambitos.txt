@@ -1,0 +1,24 @@
+PILLE puntos COMO ENTERO = 10 LISTO
+PILLE acumulado COMO ENTERO = 0 LISTO
+
+PILAS (1 == 1) DE UNA {
+    PILLE puntos COMO ENTERO = 99 LISTO
+    QUIUBO(puntos) LISTO
+    acumulado = acumulado + 5 LISTO
+
+    PILAS (1 == 1) DE UNA {
+        QUIUBO(puntos) LISTO
+        acumulado = acumulado + 2 LISTO
+    } LISTO
+} LISTO
+
+QUIUBO(puntos) LISTO
+QUIUBO(acumulado) LISTO
+
+PILLE contador COMO ENTERO = 1 LISTO
+
+MIENTRAS (contador <= 2) DE UNA {
+    PILLE temporal COMO ENTERO = contador * 10 LISTO
+    QUIUBO(temporal) LISTO
+    contador = contador + 1 LISTO
+} LISTO

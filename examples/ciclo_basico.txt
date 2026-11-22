@@ -1,0 +1,13 @@
+PILLE contador COMO ENTERO = 1 LISTO
+
+MIENTRAS (contador <= 3) DE UNA {
+    QUIUBO(contador) LISTO
+    contador = contador + 1 LISTO
+} LISTO
+
+QUIUBO("Fin del ciclo") LISTO
+QUIUBO(contador) LISTO
+
+MIENTRAS (contador < 0) DE UNA {
+    QUIUBO("Este mensaje no debe aparecer") LISTO
+} LISTO

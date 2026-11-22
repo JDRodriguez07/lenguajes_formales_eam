@@ -1,8 +1,8 @@
 """Salidas esperadas calculadas a mano para la entrega del 14."""
-from tuquiquilulu.lexer import tokenizar
-from tuquiquilulu.parser import Parser
-from tuquiquilulu.arbol import representar_arbol
-from tuquiquilulu.tokens import ErrorDeLenguaje, ErrorSintactico, Token
+from lexer import tokenizar
+from parser import Parser
+from arbol import representar_arbol
+from tokens import ErrorDeLenguaje, ErrorSintactico, Token
 
 CASOS = [
 ('Resta a la izquierda', 'PILLE r COMO ENTERO = 10 - 3 - 2 LISTO',
@@ -33,9 +33,26 @@ CASOS = [
 ('Error en segunda línea', 'PILLE x COMO ENTERO = 1 LISTO\nx = * 2 LISTO',
  "Error sintáctico en línea 2, columna 5: se esperaba un número, un texto, un booleano, una variable o '(' y llegó '*'", ErrorSintactico),
 ('Tokens sobrantes', 'x = 1 LISTO )',
- "Error sintáctico en línea 1, columna 13: se esperaba una declaración o asignación y llegó ')'", ErrorSintactico),
+ "Error sintáctico en línea 1, columna 13: se esperaba una declaración, asignación o salida y llegó ')'", ErrorSintactico),
 ('Todavía no valida tipos', 'PILLE x COMO ENTERO = "hola" LISTO',
  'Programa\n  Declaracion ENTERO x\n    Cadena "hola"', None),
+     (
+        "Salida con una expresión",
+        "QUIUBO(puntos + 2) LISTO",
+        "Programa\n"
+        "  Mostrar\n"
+        "    OperacionBinaria +\n"
+        "      Variable puntos\n"
+        "      Numero 2",
+        None,
+    ),
+    (
+        "Salida sin paréntesis de cierre",
+        "QUIUBO(5 LISTO",
+        "Error sintáctico en línea 1, columna 10: "
+        "se esperaba ')' y llegó 'LISTO'",
+        ErrorSintactico,
+    ),
 ]
 
 def comprobar(nombre, entrada, esperado, resultado, coincide):

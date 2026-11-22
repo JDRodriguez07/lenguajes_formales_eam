@@ -38,3 +38,8 @@ class ErrorLexico(ErrorDeLenguaje):
 
 class ErrorSintactico(ErrorDeLenguaje):
     fase = "Error sintáctico"
+
+class ErrorSemantico(ErrorDeLenguaje):
+    """Informa problemas de significado detectados al ejecutar."""
+
+    fase = "Error semántico"

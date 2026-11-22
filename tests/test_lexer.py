@@ -1,7 +1,7 @@
 """Pruebas del analizador léxico de Tuquiquilulu."""
 
-from tuquiquilulu.tokens import Token, ErrorLexico
-from tuquiquilulu.lexer import tokenizar
+from tokens import Token, ErrorLexico
+from lexer import tokenizar
 
 # Las funciones siguientes solo muestran y comparan las pruebas.
 # Las salidas esperadas se escriben manualmente, antes de ejecutar el lexer.
@@ -167,19 +167,19 @@ if __name__ == "__main__":
         "a==b a!=b a<=b a>=b",
         [
             Token("IDENTIFICADOR", "a", 1, 1),
-            Token("OPERADOR", "==", 1, 2),
+            Token("COMPARADOR", "==", 1, 2),
             Token("IDENTIFICADOR", "b", 1, 4),
 
             Token("IDENTIFICADOR", "a", 1, 6),
-            Token("OPERADOR", "!=", 1, 7),
+            Token("COMPARADOR", "!=", 1, 7),
             Token("IDENTIFICADOR", "b", 1, 9),
 
             Token("IDENTIFICADOR", "a", 1, 11),
-            Token("OPERADOR", "<=", 1, 12),
+            Token("COMPARADOR", "<=", 1, 12),
             Token("IDENTIFICADOR", "b", 1, 14),
 
             Token("IDENTIFICADOR", "a", 1, 16),
-            Token("OPERADOR", ">=", 1, 17),
+            Token("COMPARADOR", ">=", 1, 17),
             Token("IDENTIFICADOR", "b", 1, 19),
 
             Token("EOF", "", 1, 20),
@@ -191,10 +191,10 @@ if __name__ == "__main__":
         "a<b a>b",
         [
             Token("IDENTIFICADOR", "a", 1, 1),
-            Token("OPERADOR", "<", 1, 2),
+            Token("COMPARADOR", "<", 1, 2),
             Token("IDENTIFICADOR", "b", 1, 3),
             Token("IDENTIFICADOR", "a", 1, 5),
-            Token("OPERADOR", ">", 1, 6),
+            Token("COMPARADOR", ">", 1, 6),
             Token("IDENTIFICADOR", "b", 1, 7),
             Token("EOF", "", 1, 8),
         ],
@@ -205,7 +205,7 @@ if __name__ == "__main__":
         "x == 5",
         [
             Token("IDENTIFICADOR", "x", 1, 1),
-            Token("OPERADOR", "==", 1, 3),
+            Token("COMPARADOR", "==", 1, 3),
             Token("NUMERO", "5", 1, 6),
             Token("EOF", "", 1, 7),
         ],

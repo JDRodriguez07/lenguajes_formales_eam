@@ -1,12 +1,25 @@
-"""Lee un archivo y muestra el árbol construido por el parser."""
+"""Lee y ejecuta un programa de Tuquiquilulu."""
 
 import sys
 
-from tuquiquilulu.lexer import tokenizar
-from tuquiquilulu.parser import Parser
-from tuquiquilulu.tokens import ErrorDeLenguaje
-from tuquiquilulu.arbol import mostrar_arbol
+from lexer import tokenizar
+from parser import Parser
+from tokens import ErrorDeLenguaje
+from interprete import Interprete
 
+def mostrar_error(error, texto):
+    """Muestra el mensaje, la línea original y la posición del error."""
+    print(error)
+
+    lineas = texto.split("\n")
+    indice = error.linea - 1
+
+    if 0 <= indice < len(lineas):
+        linea = lineas[indice]
+        antes_del_error = linea[:error.columna - 1]
+
+        print(linea.expandtabs(4))
+        print(" " * len(antes_del_error.expandtabs(4)) + "^")
 
 def main():
     # Recibir el nombre del programa y la ruta del archivo.
@@ -21,16 +34,12 @@ def main():
         with open(ruta, encoding="utf-8") as archivo:
             texto = archivo.read()
 
-        # Texto -> tokens -> árbol. Todavía no se ejecutan instrucciones.
+        # Texto -> tokens -> árbol -> ejecución.
         programa = Parser(tokenizar(texto)).programa()
-        mostrar_arbol(programa)
+        Interprete().ejecutar_programa(programa)
 
     except ErrorDeLenguaje as error:
-        print(error)
-        print(
-            f"linea = {error.linea}, "
-            f"columna = {error.columna}"
-        )
+        mostrar_error(error, texto)
         return 1
 
     except UnicodeDecodeError:

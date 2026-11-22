@@ -1,0 +1,12 @@
+PILLE puntos COMO ENTERO = 5 LISTO
+puntos = puntos + 2 LISTO
+QUIUBO(puntos) LISTO
+
+PILLE promedio COMO DECIMAL = puntos / 2.0 LISTO
+QUIUBO(promedio) LISTO
+
+PILLE mensaje COMO TEXTO = "Fin del calculo" LISTO
+QUIUBO(mensaje) LISTO
+
+PILLE activo COMO BOOLEANO = SISAS LISTO
+QUIUBO(activo) LISTO

@@ -1,291 +1,380 @@
-# Grupo 1 - Los Más Chimbas
+# 1. Tuquiquilulu — Lenguajes Formales
 
 Proyecto de Lenguajes Formales — EAM
+
+Grupo 1: Los Más Chimbas
 
 ## Integrantes
 
 - Juan David Rodríguez
-- Anggy Ruiz
-- Valentina Marín
-- Diego Osorio
+- Diego Andrés Osorio
+- Valentina Marín Flórez
+- Anggy Dahiana Ruiz
 
-## Dominio del sistema
+Tuquiquilulu es un lenguaje educativo implementado en Python, con
+vocabulario inspirado en expresiones colombianas. El proyecto evolucionó
+desde la tokenización hasta un intérprete con variables, operaciones,
+condicionales, ciclos, ámbitos y lectura de datos.
 
-Nuestro sistema es un juego de preguntas en línea tipo Kahoot. Varios jugadores
-se conectan a una sala, responden preguntas contra el reloj y van ganando puntos
-según si aciertan y qué tan rápido contestan. El sistema tiene que decidir cosas
-como cuántos puntos dar, cuándo bajar la dificultad, cuándo quitar una vida y
-cuándo se acaba la partida.
+# 2. Cómo ejecutar
 
-Al lenguaje lo llamamos **Tuquiquilulu** y está escrito en jerga colombiana:
-en vez de SI y ENTONCES usamos PILAS y DE UNA.
+## Requisitos
 
-## Las 15 reglas
+- Python 3.10 o superior.
+- Archivos de entrada guardados en UTF-8.
+- No requiere instalar dependencias externas.
 
-**Con una sola condición**
+Ejecutar desde la raíz del repositorio:
 
-1. Si el jugador responde correctamente, se le suman 100 puntos.
-2. Si responde en menos de 5 segundos, gana 500 puntos de bonificación.
-3. Si el jugador se queda sin vidas, la partida le sale mal.
-4. Si el puntaje pasa de 1000, se le entrega una insignia.
-5. Si la partida no está activa, el contador de jugadores vuelve a cero.
+```bash
+python main.py programa.txt
+```
 
-**Con condiciones compuestas (Y / O)**
+`programa.txt` debe contener instrucciones de Tuquiquilulu.
 
-6. Si lleva 3 o más aciertos seguidos y además responde en menos de 10 segundos, su puntaje se multiplica por 2.
-7. Si quedan menos de 2 jugadores o se acaba el tiempo, la partida termina.
-8. Si el puntaje está entre 800 y 1500, la dificultad sube a nivel 2.
-9. Si lleva 5 aciertos seguidos y todavía tiene vidas, o si va de primero en el ranking, su puntaje se multiplica por 3.
-10. Si va en la última pregunta, es el primero del ranking y aún tiene vidas, gana la partida.
+El procesamiento sigue estas etapas:
 
-**Combinando tipos de datos (numérico + booleano)**
+1. El lexer transforma el texto en tokens con línea y columna.
+2. El parser comprueba la sintaxis y construye el árbol.
+3. El intérprete recorre el árbol, comprueba las reglas semánticas
+   durante la ejecución y ejecuta las instrucciones.
 
-11. Si acierta y además lo hace en 3 segundos o menos, la jugada se considera perfecta.
-12. Si usó un comodín o le queda una sola vida, las preguntas bajan al nivel más fácil.
-13. Si está en modo relámpago y falla la pregunta, pierde una vida.
-14. Si falla y traía una racha, la racha se reinicia.
-15. Si es la última pregunta, tiene más de 2000 puntos y nunca usó un comodín, se lleva el logro de campeón limpio.
+Si ocurre un error del lenguaje, se muestra su mensaje, posición,
+línea de código y un indicador `^`. El programa termina con código 1.
+Una ejecución correcta termina con código 0.
 
-Las mismas 15 reglas escritas en el lenguaje y en su forma simbólica están en
-`docs/reglas.txt`.
+La validación semántica ocurre durante la ejecución: una salida
+impresa antes de un error se conserva.
 
-## Clasificación de las variables
+## Los tres programas de muestra
 
-| Variable               | Tipo Tuquiquilulu | Equivalencia Python | Ejemplo           |
-|------------------------|--------------------|---------------------|-------------------|
-| puntos                 | ENTERO             | int                 | 1500              |
-| bonus                  | ENTERO             | int                 | 500               |
-| racha                  | ENTERO             | int                 | 3                 |
-| vidas                  | ENTERO             | int                 | 2                 |
-| numero_pregunta        | ENTERO             | int                 | 7                 |
-| total_preguntas        | ENTERO             | int                 | 15                |
-| jugadores_conectados   | ENTERO             | int                 | 12                |
-| segundos_restantes     | ENTERO             | int                 | 0                 |
-| ranking                | ENTERO             | int                 | 1                 |
-| dificultad             | ENTERO             | int                 | 2                 |
-| multiplicador          | ENTERO             | int                 | 2                 |
-| tiempo_respuesta       | DECIMAL            | float               | 3.5               |
-| respuesta_correcta     | BOOLEANO           | bool                | True              |
-| partida_activa         | BOOLEANO           | bool                | True              |
-| es_primero             | BOOLEANO           | bool                | False             |
-| uso_comodin            | BOOLEANO           | bool                | False             |
-| modo_relampago         | BOOLEANO           | bool                | True              |
-| es_final               | BOOLEANO           | bool                | False             |
-| insignia               | BOOLEANO           | bool                | True              |
-| estado                 | BOOLEANO           | bool                | True              |
-| logro                  | TEXTO              | str                 | "campeon limpio"  |
-| nombre_jugador         | TEXTO              | str                 | "anggy"           |
-| categoria              | TEXTO              | str                 | "deportes"        |
+### Tabla de multiplicar del 3
 
-## Diseño del lenguaje (incluye construcciones aún pendientes)
+```bash
+python main.py examples/tabla_del_3.txt
+```
 
-El diseño de Tuquiquilulu incluye declaraciones y reglas condicionales. El parser del 14 de noviembre implementa declaraciones, asignaciones y expresiones; las reglas condicionales se incorporarán después.
-
-### Declaración de variables
-
-Una declaración tiene la siguiente estructura:
+Salida:
 
 ```text
-PILLE <variable> COMO <tipo> = <valor> LISTO
+3
+6
+9
+12
+15
 ```
 
-Ejemplos:
+### Factorial de 5
+
+```bash
+python main.py examples/factorial_de_5.txt
+```
+
+Salida:
 
 ```text
-PILLE puntos COMO ENTERO = 0 LISTO
-PILLE tiempo COMO DECIMAL = 3.5 LISTO
-PILLE categoria COMO TEXTO = "Historia" LISTO
-PILLE partida_activa COMO BOOLEANO = SISAS LISTO
+120
 ```
 
-Su sintaxis en BNF es:
+### Promedio de tres notas
 
-```bnf
-<declaracion> ::= PILLE <variable> COMO <tipo>
-                  <inicializacion> LISTO
-
-<tipo> ::= ENTERO
-         | DECIMAL
-         | TEXTO
-         | BOOLEANO
-
-<inicializacion> ::= = <expresion> | ε
+```bash
+python main.py examples/promedio_notas.txt
 ```
 
-El símbolo `ε` significa que la inicialización es opcional. Por ejemplo:
+Salida:
 
 ```text
-PILLE puntos COMO ENTERO LISTO
+4.0
+aprueba
 ```
 
-declara la variable sin asignarle inicialmente un valor.
-
-### Reglas condicionales
-
-Una regla tiene la siguiente estructura:
-
-```text
-PILAS <condicion> DE UNA <accion> LISTO
-```
-
-Su sintaxis en BNF es:
-
-```bnf
-<regla> ::= PILAS <condicion> DE UNA <accion> LISTO
-
-<condicion> ::= <comparacion>
-              | <variable_bool>
-              | NADA DE <condicion>
-              | <condicion> Y ADEMÁS <condicion>
-              | <condicion> O DE PRONTO <condicion>
-              | ( <condicion> )
-
-<comparacion> ::= <variable> <operador_relacional> <valor>
-                | <variable> <operador_relacional> <variable>
-
-<accion> ::= <variable> = <expresion>
-
-<expresion> ::= <valor>
-              | <variable>
-              | <expresion> <operador_aritmetico> <expresion>
-
-<operador_relacional> ::= >
-                        | <
-                        | >=
-                        | <=
-                        | ==
-                        | !=
-
-<operador_aritmetico> ::= +
-                        | -
-                        | *
-
-<variable> ::= identificador en minúsculas con guion bajo
-
-<valor> ::= <numero>
-          | <texto>
-          | SISAS
-          | NONAS
-          | MELO
-          | PAILA
-```
-
-### Diferencia entre `PILLE` y `PILAS`
-
-- `PILLE` comienza la declaración de una variable.
-- `PILAS` comienza una regla condicional.
-- `COMO` indica el tipo de la variable.
-- `DE UNA` separa la condición de la acción.
-- `LISTO` termina tanto declaraciones como reglas.
-
-## Convención de escritura
-
-- Las palabras reservadas van siempre en MAYÚSCULA.
-- Las variables van en minúscula con guion bajo: `tiempo_respuesta`.
-- Como las reservadas son mayúsculas y las variables minúsculas, nunca se pueden confundir.
-- `=` asigna un valor y `==` compara. No son lo mismo.
-- Toda regla termina en LISTO.
-- Los comentarios empiezan con `OJO:`.
-- `PILLE` inicia la declaración de una variable.
-- `COMO` indica el tipo de una variable.
-- `PILAS` inicia una regla condicional.
-- Los tipos del lenguaje son `ENTERO`, `DECIMAL`, `TEXTO` y `BOOLEANO`.
-- `PILLE` y `PILAS` son palabras diferentes y cumplen funciones diferentes.
-- Toda declaración y toda regla terminan con `LISTO`.
-
-## Palabras reservadas
-
-Están documentadas con su significado y su categoría en `docs/palabras_reservadas.md`.
-
-## Archivos del proyecto
-
-| Archivo o carpeta | Descripción |
-|---|---|
-| `main.py` | Lee un archivo, construye y muestra el árbol; presenta errores léxicos y sintácticos. |
-| `tuquiquilulu/__init__.py` | Identifica el paquete del analizador. |
-| `tuquiquilulu/lexer.py` | Configuración del vocabulario y función `tokenizar`, encargada del análisis léxico. |
-| `tuquiquilulu/tokens.py` | `Token`, `ErrorDeLenguaje`, `ErrorLexico` y `ErrorSintactico`. |
-| `tuquiquilulu/parser.py` | Gramática EBNF y parser por descenso recursivo. |
-| `tuquiquilulu/arbol.py` | Nodos con tokens y funciones para representar el árbol. |
-| `tests/test_parser_arbol.py` | 19 casos de sintaxis, árboles, posiciones y métodos auxiliares. |
-| `tests/test_parser.py` | Pruebas de posiciones independientes, consulta sin movimiento y recorrido completo con protección de EOF. |
-| `tests/__init__.py` | Identifica el paquete de pruebas. |
-| `tests/test_lexer.py` | Casos de prueba con entradas, resultados esperados y comparación con los resultados reales. |
-| `examples/programa_valido.txt` | Entrada válida para comprobar la lectura de archivos y el árbol de una declaración. |
-| `examples/programa_invalido.txt` | Entrada con un error léxico para comprobar su ubicación y mensaje. |
-| `examples/ejemplo.txt` | Programa de demostración del lexer con comentarios, decimales, cadenas, booleanos y operadores. |
-| `docs/reglas.txt` | Quince reglas del juego en lenguaje natural, Tuquiquilulu y representación simbólica. |
-| `docs/palabras_reservadas.md` | Documentación del vocabulario y los símbolos del lenguaje. |
-| `historico/` | Ejercicios y entregables anteriores que conservan la evolución del proyecto. |
-| `.gitignore` | Excluye archivos generados por Python y entornos virtuales del control de versiones. |
-| `README.md` | Descripción general del proyecto, sintaxis e instrucciones de ejecución. |
-
-La carpeta `historico/` contiene `paso1.py`, `entregable_uno.py`,
-`entregable_dos.py` y `parcial.py`. La implementación actual está en
-`tuquiquilulu/` y sus pruebas están en `tests/`.
-
-## Entrega del 14 de noviembre: parser y árbol
-
-Requiere Python 3.10 o superior. Ejecutar desde la raíz del repositorio.
+## Pruebas
 
 ```bash
 python -m tests.test_lexer
 python -m tests.test_parser
 python -m tests.test_parser_arbol
-python main.py examples/arbol_declaraciones.txt
-python main.py examples/arbol_precedencia.txt
-python main.py examples/arbol_resta.txt
-python main.py examples/error_falta_listo.txt
-python main.py examples/error_operadores.txt
-python main.py examples/error_parentesis.txt
+python -m tests.test_comparaciones
+python -m tests.test_interprete
+python -m tests.test_ejecucion
+python -m tests.test_entrega_final
 ```
 
-Resultados: 27 pruebas del lexer, 3 del recorrido original y 19 del parser con
-árbol. Cada caso muestra entrada, salida esperada, salida real y coincidencia.
-Los ejemplos inválidos terminan con código de salida 1: es el comportamiento esperado.
+Las pruebas presentan la entrada, el resultado esperado, el resultado
+real y si coinciden. Las pruebas de lectura simulan el teclado para
+poder repetirse automáticamente.
 
-### Gramática implementada en EBNF
+## Archivos principales
+
+| Archivo | Responsabilidad |
+|---|---|
+| `tokens.py` | Define los tokens y los errores del lenguaje. |
+| `lexer.py` | Reconoce palabras, literales, operadores y símbolos; ignora comentarios. |
+| `arbol.py` | Define los nodos y permite representar el árbol como texto. |
+| `parser.py` | Comprueba la sintaxis y construye el árbol respetando la precedencia. |
+| `interprete.py` | Ejecuta instrucciones, evalúa expresiones y administra entornos. |
+| `main.py` | Lee el archivo, conecta las etapas y presenta errores. |
+| `tests/` | Pruebas de las distintas etapas. |
+| `examples/` | Programas válidos y ejemplos de errores. |
+| `historico/` | Ejercicios de etapas anteriores. |
+| `docs/` | Documentación de la evolución del proyecto. |
+
+La especificación de la versión final es este README. Los documentos
+históricos pueden contener sintaxis o alcances anteriores.
+
+# 3. Ficha del lenguaje
+
+## Nombre e identidad
+
+El nombre Tuquiquilulu identifica nuestra propuesta de un lenguaje
+con un estilo cercano y expresiones colombianas. Su vocabulario,
+como `PILLE`, `PILAS`, `QUIUBO` y `LISTO`, refleja esa identidad.
+
+La idea inicial del proyecto estaba relacionada con reglas para un
+juego de preguntas. El intérprete final permite escribir programas
+pequeños de cálculo y control de flujo.
+
+## Equivalencias con Java
+
+| Concepto | Java | Tuquiquilulu |
+|---|---|---|
+| Tipos | `int`, `double`, `String`, `boolean` | `ENTERO`, `DECIMAL`, `TEXTO`, `BOOLEANO` |
+| Declaración | `int x = 5;` | `PILLE x COMO ENTERO = 5 LISTO` |
+| Asignación | `x = 8;` | `x = 8 LISTO` |
+| Fin de instrucción | `;` | `LISTO` |
+| Salida | `System.out.println(x);` | `QUIUBO(x) LISTO` |
+| Condicional | `if (c) { ... } else { ... }` | `PILAS (c) DE UNA { ... } O SI NO { ... } LISTO` |
+| Ciclo | `while (c) { ... }` | `MIENTRAS (c) DE UNA { ... } LISTO` |
+| Comentario de línea | `// comentario` | `OJO: comentario` |
+| Comentario de bloque | `/* comentario */` | `/* comentario */` |
+| Conjunción | `a && b` | `a Y ADEMÁS b` |
+| Disyunción | `a || b` | `a O DE PRONTO b` |
+| Negación | `!a` | `NADA DE a` |
+
+En los ejemplos, `c` representa una condición y `...` representa
+instrucciones; no son elementos que deban copiarse literalmente.
+
+## Decisión de diseño
+
+Elegimos palabras y expresiones cercanas al habla colombiana para
+identificar las instrucciones. Usamos `LISTO` como terminador explícito.
+
+También exigimos booleanos en condiciones y operaciones lógicas:
+un número como `1` no se interpreta automáticamente como verdadero.
+
+## Ejemplo
+
+```text
+PILLE puntos COMO ENTERO = 7 LISTO
+
+PILAS (puntos >= 1 Y ADEMÁS puntos <= 10) DE UNA {
+    QUIUBO("En rango") LISTO
+} O SI NO {
+    QUIUBO("Fuera de rango") LISTO
+} LISTO
+```
+
+# 4. Gramática final en EBNF
+
+Convenciones:
+
+- Las comillas indican texto literal.
+- `|` separa alternativas.
+- `*` fuera de comillas significa cero o más repeticiones.
+- `?` indica una parte opcional.
+- `EOF` es el token de fin de archivo; no se escribe en el programa.
 
 ```ebnf
 programa    ::= instruccion* EOF
-instruccion ::= declaracion | asignacion
-declaracion ::= "PILLE" IDENTIFICADOR "COMO" TIPO ("=" expresion)? "LISTO"
+
+instruccion ::= declaracion | asignacion | salida
+              | condicional | mientras | lectura
+
+declaracion ::= "PILLE" IDENTIFICADOR "COMO" TIPO
+                ("=" expresion)? "LISTO"
+
 asignacion  ::= IDENTIFICADOR "=" expresion "LISTO"
-expresion   ::= termino (("+" | "-") termino)*
-termino     ::= factor (("*" | "/") factor)*
-factor      ::= NUMERO | TEXTO | BOOLEANO | IDENTIFICADOR | "(" expresion ")"
+
+salida      ::= "QUIUBO" "(" expresion ")" "LISTO"
+
+lectura     ::= "LEA" "(" IDENTIFICADOR ")" "LISTO"
+
+bloque      ::= "{" instruccion* "}"
+
+condicional ::= "PILAS" "(" condicion ")" "DE" "UNA" bloque
+                ("O" "SI" "NO" bloque)? "LISTO"
+
+mientras    ::= "MIENTRAS" "(" condicion ")" "DE" "UNA"
+                bloque "LISTO"
+
+condicion   ::= expresion
+expresion   ::= logica_o
+
+logica_o    ::= logica_y ("O" "DE" "PRONTO" logica_y)*
+logica_y    ::= logica_no ("Y" "ADEMÁS" logica_no)*
+logica_no   ::= "NADA" "DE" logica_no | comparacion
+
+comparacion ::= aritmetica (COMPARADOR aritmetica)?
+aritmetica  ::= termino (("+" | "-") termino)*
+termino     ::= unario (("*" | "/") unario)*
+unario      ::= "-" unario | factor
+
+factor      ::= NUMERO | TEXTO | BOOLEANO | IDENTIFICADOR
+              | "(" expresion ")"
+
+TIPO        ::= "ENTERO" | "DECIMAL" | "TEXTO" | "BOOLEANO"
+COMPARADOR  ::= "==" | "!=" | "<" | ">" | "<=" | ">="
+BOOLEANO    ::= "SISAS" | "NONAS" | "MELO" | "PAILA"
+              | "true" | "false"
 ```
 
-`*` fuera de comillas indica repetición; `?` indica una parte opcional. El `"*"`
-entre comillas es el operador de multiplicación. Se conserva la inicialización
-opcional del diseño original: su nodo tiene `valor=None` y aún no se ejecuta.
-`TEXTO` y `BOOLEANO` aquí son tipos de tokens literales, no los tokens `TIPO`
-que contienen las palabras TEXTO y BOOLEANO en una declaración.
+`TEXTO` y `BOOLEANO` en `factor` representan tokens de valores
+literales. Las palabras de los tipos en las declaraciones se
+clasifican como `TIPO`.
 
-### Qué cambió
+## Reglas léxicas
 
-- El lexer reconoce `/` después de comprobar los comentarios de bloque.
-- Los errores heredan de `ErrorDeLenguaje`; `main.py` captura esa clase base.
-- `avanzar()` devuelve el token consumido y mantiene la protección de EOF.
-- `esperar()` comprueba tipo y, opcionalmente, texto; consume solo si coincide.
-- Cada regla de la gramática tiene un método que devuelve un nodo.
-- `termino()` agrupa multiplicación/división antes de suma/resta.
-- Los ciclos de `expresion()` y `termino()` agrupan de izquierda a derecha.
-- Los paréntesis hacen que `factor()` vuelva a llamar a `expresion()`.
-- El árbol conserva los tokens y sus posiciones para las fases posteriores.
+- Se distinguen mayúsculas y minúsculas.
+- Los identificadores comienzan con una letra y continúan con
+  letras, dígitos o guion bajo. No pueden ser palabras reservadas,
+  nombres de tipos ni literales booleanos.
+- El lexer usa `isalpha()` e `isalnum()`, por lo que admite letras
+  Unicode, incluidas las letras con tilde.
+- Los números se escriben con dígitos; los decimales requieren
+  dígitos antes y después del punto, como `3.5`.
+- El signo negativo es un operador separado del token numérico.
+- Los textos usan comillas dobles y ocupan una sola línea.
+  No se implementan secuencias de escape.
+- Los comentarios `OJO:` terminan al finalizar la línea.
+- Los comentarios `/* ... */` pueden ocupar varias líneas y
+  no admiten anidamiento.
+- Los espacios, tabulaciones y comentarios no producen tokens.
+- Las expresiones de varias palabras se reconocen como tokens
+  separados y el parser comprueba su orden.
+- Se conserva el reconocimiento léxico de `if`, `else`, `while`,
+  coma, punto y punto y coma de ejercicios anteriores. Eso no
+  implica que el parser acepte instrucciones Java ni `;` como
+  terminador: la sintaxis ejecutable es la descrita arriba.
 
-### Alcance y archivos de ejemplo
+## Precedencia y agrupación
 
-`main.py` muestra el árbol, no calcula resultados. No verifica todavía variables
-no declaradas, compatibilidad de tipos ni división por cero. Tampoco reconoce
-condicionales, ciclos, operadores lógicos ni menos unario en el parser.
-Los booleanos se guardan como nodos; su ejecución será parte de una etapa posterior.
+De menor a mayor prioridad:
 
-`examples/ejemplo.txt` sigue siendo una muestra histórica del lexer y contiene
-instrucciones que este parser aún no admite. Para esta entrega usar los archivos
-`arbol_*.txt`. Los archivos `error_*.txt` demuestran errores sintácticos;
-`programa_invalido.txt` sigue demostrando un error léxico.
+1. `O DE PRONTO`.
+2. `Y ADEMÁS`.
+3. `NADA DE`.
+4. Comparaciones.
+5. Suma y resta.
+6. Multiplicación y división.
+7. Menos unario.
 
-La estructura exigida para la entrega final del 23 de noviembre se adaptará después:
-los módulos principales deberán estar en la raíz. Esta etapa conserva el paquete
-`tuquiquilulu` para centrarse en el entregable del 14 y mantener las pruebas anteriores.
+Los paréntesis permiten cambiar la agrupación. La suma, resta,
+multiplicación y división se agrupan de izquierda a derecha.
+
+No se admiten comparaciones encadenadas como `1 < x < 10`.
+Se escribe `1 < x Y ADEMÁS x < 10`.
+
+# 5. Reglas de operaciones entre tipos
+
+## Variables y ámbitos
+
+- Una variable debe declararse antes de usarse.
+- La inicialización es opcional, pero leer una variable sin valor
+  produce un error.
+- No se permite declarar dos veces el mismo nombre en un ámbito.
+- Cada bloque crea un entorno local conectado con su entorno padre.
+- Una declaración local puede ocultar una variable exterior del
+  mismo nombre.
+- La búsqueda y la asignación utilizan la variable más cercana,
+  recorriendo los entornos hacia afuera.
+- Al terminar un bloque se recupera el entorno anterior.
+- Cada vuelta de un ciclo crea un nuevo entorno para su cuerpo.
+
+## Tipos y operaciones
+
+| Operación | Regla |
+|---|---|
+| Guardar en `ENTERO` | Solo admite valores enteros. |
+| Guardar en `DECIMAL` | Admite enteros y decimales; guarda el valor como decimal. |
+| Guardar en `TEXTO` | Solo admite texto. |
+| Guardar en `BOOLEANO` | Solo admite booleanos. |
+| `+`, `-`, `*` entre números | Calculan el resultado; si interviene un decimal, el resultado es decimal. |
+| `/` entre enteros | División truncada hacia cero: `7 / 2` da `3`; `-7 / 2` da `-3`. |
+| `/` con algún decimal | División decimal: `7 / 2.0` da `3.5`. |
+| División entre cero | Produce un error semántico. |
+| `+` entre textos | Concatena: `"ho" + "la"` da `"hola"`. |
+| Texto con número | No se convierte automáticamente; la operación produce un error. |
+| Menos unario | Solo admite números. |
+| `<`, `>`, `<=`, `>=` | Solo comparan números. |
+| `==`, `!=` | Admiten números entre sí, textos entre sí y booleanos entre sí. |
+| Operadores lógicos | Exigen valores booleanos en los operandos evaluados. |
+| Condiciones | Deben producir un booleano. |
+
+Los booleanos no se consideran enteros en las operaciones del lenguaje.
+
+`Y ADEMÁS` y `O DE PRONTO` usan cortocircuito: no evalúan el
+operando derecho cuando el izquierdo ya determina el resultado.
+
+`MIENTRAS` vuelve a evaluar su condición antes de cada vuelta.
+Como protección, cada ejecución de un ciclo permite hasta 100.000
+iteraciones; si necesita otra vuelta, produce un error semántico.
+
+# 6. Requerimientos electivos escogidos
+
+## Electivo 1: tipo booleano
+
+Los valores verdaderos son `SISAS`, `MELO` y `true`.
+Los falsos son `NONAS`, `PAILA` y `false`.
+
+Se pueden guardar resultados de comparaciones y usar variables
+booleanas directamente en condiciones:
+
+```text
+PILLE puntos COMO ENTERO = 7 LISTO
+PILLE listo COMO BOOLEANO = puntos > 3 LISTO
+
+PILAS (listo) DE UNA {
+    QUIUBO("Listo para continuar") LISTO
+} LISTO
+```
+
+Al imprimir un booleano, la salida se normaliza a `SISAS` o `NONAS`.
+
+Ejemplo:
+
+```bash
+python main.py examples/logicos.txt
+```
+
+## Electivo 2: lectura de datos
+
+`LEA(variable) LISTO` pide un dato y lo convierte al tipo declarado.
+La variable debe existir antes de la lectura.
+
+```text
+PILLE edad COMO ENTERO LISTO
+LEA(edad) LISTO
+QUIUBO(edad + 1) LISTO
+```
+
+| Tipo | Entrada |
+|---|---|
+| `ENTERO` | Dígitos con signo negativo opcional, como `20` o `-5`. |
+| `DECIMAL` | Un entero o un decimal con punto, como `7` o `3.5`; admite signo negativo. |
+| `TEXTO` | Se conserva el contenido ingresado, sin exigir comillas. |
+| `BOOLEANO` | Uno de los seis literales booleanos admitidos. |
+
+En números y booleanos se ignoran espacios externos.
+En texto se conservan. Los decimales ingresados deben ser finitos.
+
+Si la conversión falla, se informa un error semántico en la posición
+de la variable. Si se agota la entrada, también se informa un error.
+El valor anterior no se reemplaza cuando la lectura falla.
+
+Ejemplos:
+
+```bash
+python main.py examples/lectura_basica.txt
+python main.py examples/error_lectura.txt
+```

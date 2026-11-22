@@ -1,0 +1,19 @@
+PILLE nombre COMO TEXTO LISTO
+PILLE edad COMO ENTERO LISTO
+PILLE nota COMO DECIMAL LISTO
+PILLE activo COMO BOOLEANO LISTO
+
+LEA(nombre) LISTO
+LEA(edad) LISTO
+LEA(nota) LISTO
+LEA(activo) LISTO
+
+QUIUBO("Hola " + nombre) LISTO
+QUIUBO(edad + 1) LISTO
+QUIUBO(nota) LISTO
+
+PILAS (activo) DE UNA {
+    QUIUBO("Usuario activo") LISTO
+} O SI NO {
+    QUIUBO("Usuario inactivo") LISTO
+} LISTO

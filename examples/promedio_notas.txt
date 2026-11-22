@@ -1,0 +1,9 @@
+PILLE promedio COMO DECIMAL = (3.0 + 4.0 + 5.0) / 3.0 LISTO
+
+QUIUBO(promedio) LISTO
+
+PILAS (promedio >= 3.0) DE UNA {
+    QUIUBO("aprueba") LISTO
+} O SI NO {
+    QUIUBO("reprueba") LISTO
+} LISTO
