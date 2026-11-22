@@ -6,6 +6,7 @@ from .arbol import (
     Comparacion,
     Booleano,
     OperacionBinaria,
+    OperacionUnaria,
     Variable,
     Declaracion,
     Asignacion,
@@ -14,6 +15,7 @@ from .arbol import (
     Condicional,
     Mientras,
 )
+
 from .tokens import ErrorSemantico
 
 ACEPTA = {
@@ -98,6 +100,24 @@ class Interprete:
                 izquierdo,
                 nodo.operador,
                 derecho,
+            )
+
+        if isinstance(nodo, OperacionUnaria):
+            valor = self.evaluar(nodo.operando)
+
+            if type(valor) not in (int, float):
+                raise ErrorSemantico(
+                    "el operador unario '-' requiere un número",
+                    nodo.operador.linea,
+                    nodo.operador.columna,
+                )
+
+            if nodo.operador.texto == "-":
+                return -valor
+
+            raise NotImplementedError(
+                f"Operador unario no implementado: "
+                f"{nodo.operador.texto}"
             )
 
         # Durante el desarrollo, señala los nodos aún no implementados.

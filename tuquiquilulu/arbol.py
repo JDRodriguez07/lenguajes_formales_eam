@@ -30,6 +30,10 @@ class OperacionBinaria:
     operador: Token
     der: object
 
+@dataclass
+class OperacionUnaria:
+    operador: Token
+    operando: object
 
 @dataclass
 class Declaracion:
@@ -109,6 +113,9 @@ def representar_arbol(nodo, nivel=0):
     elif isinstance(nodo, Mientras):
         titulo = "Mientras"
         hijos = [nodo.condicion, nodo.cuerpo]
+    elif isinstance(nodo, OperacionUnaria):
+        titulo = f"OperacionUnaria {nodo.operador.texto}"
+        hijos = [nodo.operando]
     else:
         raise TypeError(f"Nodo desconocido: {type(nodo).__name__}")
     lineas = [prefijo + titulo]

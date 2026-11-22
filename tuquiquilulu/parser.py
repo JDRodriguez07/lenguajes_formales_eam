@@ -11,7 +11,8 @@ condicional ::= "PILAS" "(" condicion ")" "DE" "UNA" bloque
 asignacion  ::= IDENTIFICADOR "=" expresion "LISTO"
 condicion ::= expresion COMPARADOR expresion
 expresion   ::= termino (("+" | "-") termino)*
-termino     ::= factor (("*" | "/") factor)*
+termino     ::= unario (("*" | "/") unario)*
+unario      ::= "-" unario | factor
 factor      ::= NUMERO | TEXTO | BOOLEANO | IDENTIFICADOR | "(" expresion ")"
 mientras    ::= "MIENTRAS" "(" condicion ")" "DE" "UNA" bloque "LISTO"
 
@@ -24,7 +25,7 @@ from .tokens import ErrorSintactico
 from .arbol import (
     Comparacion, Programa, Declaracion, Asignacion, OperacionBinaria,
     Numero, Cadena, Booleano, Variable, Mostrar, Bloque, Condicional,
-    Mientras,
+    Mientras, OperacionUnaria,
 )
 
 
@@ -182,12 +183,29 @@ class Parser:
         return izq
 
     def termino(self):
-        izq = self.factor()
-        while self.actual().tipo == "OPERADOR" and self.actual().texto in ("*", "/"):
+        izq = self.unario()
+
+        while (
+            self.actual().tipo == "OPERADOR"
+            and self.actual().texto in ("*", "/")
+        ):
             operador = self.avanzar()
-            der = self.factor()
+            der = self.unario()
             izq = OperacionBinaria(izq, operador, der)
+
         return izq
+
+    def unario(self):
+        """Reconoce el negativo antes de continuar con un factor."""
+        token = self.actual()
+
+        if token.tipo == "OPERADOR" and token.texto == "-":
+            operador = self.avanzar()
+            operando = self.unario()
+
+            return OperacionUnaria(operador, operando)
+
+        return self.factor()
 
     def condicion(self):
         """Reconoce dos expresiones separadas por un comparador."""
