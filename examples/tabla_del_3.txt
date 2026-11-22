@@ -1,0 +1,6 @@
+PILLE n COMO ENTERO = 1 LISTO
+
+MIENTRAS (n <= 5) DE UNA {
+    QUIUBO(n * 3) LISTO
+    n = n + 1 LISTO
+} LISTO

@@ -1,0 +1,9 @@
+PILLE n COMO ENTERO = 5 LISTO
+PILLE resultado COMO ENTERO = 1 LISTO
+
+MIENTRAS (n > 1) DE UNA {
+    resultado = resultado * n LISTO
+    n = n - 1 LISTO
+} LISTO
+
+QUIUBO(resultado) LISTO
