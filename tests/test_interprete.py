@@ -3,6 +3,7 @@
 from tuquiquilulu.lexer import tokenizar
 from tuquiquilulu.parser import Parser
 from tuquiquilulu.interprete import Interprete
+from tuquiquilulu.tokens import ErrorSemantico
 
 
 CASOS = [
@@ -16,6 +17,54 @@ CASOS = [
     ("Booleano PAILA", "PAILA", False, bool),
     ("Booleano true", "true", True, bool),
     ("Booleano false", "false", False, bool),
+    ("Suma", "5 + 2", 7, int),
+    ("Prioridad de multiplicación", "5 + 2 * 3", 11, int),
+    ("Paréntesis", "(5 + 2) * 3", 21, int),
+    ("Resta a la izquierda", "10 - 3 - 2", 5, int),
+    ("División entera", "7 / 2", 3, int),
+    ("División decimal", "7 / 2.0", 3.5, float),
+    ("División a la izquierda", "8 / 4 / 2", 1, int),
+    ("Suma con decimal", "2 + 0.5", 2.5, float),
+    ("Unión de textos", '"ho" + "la"', "hola", str),
+    ("División negativa hacia cero", "(0 - 7) / 2", -3, int),
+]
+
+CASOS_INVALIDOS = [
+    (
+        "División por cero",
+        "5 / 0",
+        "división por cero",
+        1,
+        3,
+    ),
+    (
+        "División por una expresión que da cero",
+        "8 / (3 - 3)",
+        "división por cero",
+        1,
+        3,
+    ),
+    (
+        "Texto por número",
+        '"hola" * 2',
+        "no se puede usar '*' con esos valores de texto",
+        1,
+        8,
+    ),
+    (
+        "Texto más número",
+        '"hola" + 2',
+        "no se puede usar '+' con esos valores de texto",
+        1,
+        8,
+    ),
+    (
+        "Booleano más número",
+        "SISAS + 1",
+        "el operador '+' requiere números",
+        1,
+        7,
+    ),
 ]
 
 
@@ -52,7 +101,40 @@ def main():
         if coincide:
             correctas += 1
 
-    total = len(CASOS)
+    for nombre, entrada, mensaje, linea, columna in CASOS_INVALIDOS:
+        parser = Parser(tokenizar(entrada))
+        nodo = parser.expresion()
+        parser.esperar("EOF")
+
+        esperado = (mensaje, linea, columna)
+
+        try:
+            valor = Interprete().evaluar(nodo)
+            resultado = ("No se produjo el error esperado", valor)
+            coincide = False
+
+        except ErrorSemantico as error:
+            resultado = (
+                error.mensaje,
+                error.linea,
+                error.columna,
+            )
+            coincide = resultado == esperado
+
+        print("\n" + "=" * 60)
+        print("INTÉRPRETE ·", nombre)
+        print("\nEntrada:")
+        print(entrada)
+        print("\nSalida esperada:")
+        print(esperado)
+        print("\nSalida real:")
+        print(resultado)
+        print("\n¿Coinciden?:", "SÍ" if coincide else "NO")
+
+        if coincide:
+            correctas += 1
+
+        total = len(CASOS) + len(CASOS_INVALIDOS)
     print(f"\nResultado: {correctas}/{total} pruebas correctas.")
 
     return 0 if correctas == total else 1
