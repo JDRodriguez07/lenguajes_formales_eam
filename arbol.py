@@ -1,7 +1,7 @@
 """Nodos del árbol: guardan estructura y tokens con su posición original."""
 
 from dataclasses import dataclass
-from .tokens import Token
+from tokens import Token
 
 
 @dataclass

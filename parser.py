@@ -27,8 +27,8 @@ PILLE y COMO son RESERVADA. Los signos aritméticos son OPERADOR.
 "?" conserva la inicialización opcional del diseño original del lenguaje.
 """
 
-from .tokens import ErrorSintactico
-from .arbol import (
+from tokens import ErrorSintactico
+from arbol import (
     Comparacion, Programa, Declaracion, Asignacion, OperacionBinaria,
     Numero, Cadena, Booleano, Variable, Mostrar, Bloque, Condicional,
     Mientras, OperacionUnaria, OperacionLogica, Negacion, Leer,

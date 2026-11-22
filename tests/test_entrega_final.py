@@ -5,10 +5,10 @@ from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
 
-from tuquiquilulu.lexer import tokenizar
-from tuquiquilulu.parser import Parser
-from tuquiquilulu.interprete import Interprete
-from tuquiquilulu.tokens import ErrorDeLenguaje
+from lexer import tokenizar
+from parser import Parser
+from interprete import Interprete
+from tokens import ErrorDeLenguaje
 
 
 # Cada caso contiene:

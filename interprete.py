@@ -1,6 +1,6 @@
 """Ejecuta el árbol de Tuquiquilulu de forma progresiva."""
 
-from .arbol import (
+from arbol import (
     Numero,
     Cadena,
     Comparacion,
@@ -19,7 +19,7 @@ from .arbol import (
     Leer,
 )
 
-from .tokens import ErrorSemantico
+from tokens import ErrorSemantico
 
 import math
 import re

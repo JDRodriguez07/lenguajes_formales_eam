@@ -1,7 +1,7 @@
 """Pruebas del analizador léxico de Tuquiquilulu."""
 
-from tuquiquilulu.tokens import Token, ErrorLexico
-from tuquiquilulu.lexer import tokenizar
+from tokens import Token, ErrorLexico
+from lexer import tokenizar
 
 # Las funciones siguientes solo muestran y comparan las pruebas.
 # Las salidas esperadas se escriben manualmente, antes de ejecutar el lexer.

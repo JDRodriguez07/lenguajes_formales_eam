@@ -1,8 +1,8 @@
 """Pruebas del prototipo de Parser de Tuquiquilulu."""
 
-from tuquiquilulu.lexer import tokenizar
-from tuquiquilulu.parser import Parser
-from tuquiquilulu.tokens import Token
+from lexer import tokenizar
+from parser import Parser
+from tokens import Token
 
 
 if __name__ == "__main__":

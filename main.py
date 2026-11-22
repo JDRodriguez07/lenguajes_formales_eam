@@ -2,10 +2,10 @@
 
 import sys
 
-from tuquiquilulu.lexer import tokenizar
-from tuquiquilulu.parser import Parser
-from tuquiquilulu.tokens import ErrorDeLenguaje
-from tuquiquilulu.interprete import Interprete
+from lexer import tokenizar
+from parser import Parser
+from tokens import ErrorDeLenguaje
+from interprete import Interprete
 
 def mostrar_error(error, texto):
     """Muestra el mensaje, la línea original y la posición del error."""

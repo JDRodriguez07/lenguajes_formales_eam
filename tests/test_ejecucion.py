@@ -3,10 +3,10 @@
 from contextlib import redirect_stdout
 from io import StringIO
 
-from tuquiquilulu.lexer import tokenizar
-from tuquiquilulu.parser import Parser
-from tuquiquilulu.interprete import Interprete
-from tuquiquilulu.tokens import ErrorSemantico
+from lexer import tokenizar
+from parser import Parser
+from interprete import Interprete
+from tokens import ErrorSemantico
 
 
 # Cada caso contiene:

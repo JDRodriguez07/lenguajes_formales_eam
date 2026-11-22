@@ -1,8 +1,8 @@
 """Salidas esperadas calculadas a mano para la entrega del 14."""
-from tuquiquilulu.lexer import tokenizar
-from tuquiquilulu.parser import Parser
-from tuquiquilulu.arbol import representar_arbol
-from tuquiquilulu.tokens import ErrorDeLenguaje, ErrorSintactico, Token
+from lexer import tokenizar
+from parser import Parser
+from arbol import representar_arbol
+from tokens import ErrorDeLenguaje, ErrorSintactico, Token
 
 CASOS = [
 ('Resta a la izquierda', 'PILLE r COMO ENTERO = 10 - 3 - 2 LISTO',

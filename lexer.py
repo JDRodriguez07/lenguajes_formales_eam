@@ -1,6 +1,6 @@
 """Reconocimiento de tokens de Tuquiquilulu."""
 
-from .tokens import Token, ErrorLexico
+from tokens import Token, ErrorLexico
 
 
 # Conjuntos: permiten comprobar si una palabra pertenece a una categoría.
