@@ -7,6 +7,19 @@ from tuquiquilulu.parser import Parser
 from tuquiquilulu.tokens import ErrorDeLenguaje
 from tuquiquilulu.interprete import Interprete
 
+def mostrar_error(error, texto):
+    """Muestra el mensaje, la línea original y la posición del error."""
+    print(error)
+
+    lineas = texto.split("\n")
+    indice = error.linea - 1
+
+    if 0 <= indice < len(lineas):
+        linea = lineas[indice]
+        antes_del_error = linea[:error.columna - 1]
+
+        print(linea.expandtabs(4))
+        print(" " * len(antes_del_error.expandtabs(4)) + "^")
 
 def main():
     # Recibir el nombre del programa y la ruta del archivo.
@@ -26,11 +39,7 @@ def main():
         Interprete().ejecutar_programa(programa)
 
     except ErrorDeLenguaje as error:
-        print(error)
-        print(
-            f"linea = {error.linea}, "
-            f"columna = {error.columna}"
-        )
+        mostrar_error(error, texto)
         return 1
 
     except UnicodeDecodeError:
