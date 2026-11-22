@@ -1,7 +1,23 @@
 """Ejecuta el árbol de Tuquiquilulu de forma progresiva."""
 
-from .arbol import Numero, Cadena, Booleano, OperacionBinaria
+from .arbol import (
+    Numero,
+    Cadena,
+    Booleano,
+    OperacionBinaria,
+    Variable,
+    Declaracion,
+    Asignacion,
+    Mostrar,
+)
 from .tokens import ErrorSemantico
+
+ACEPTA = {
+    "ENTERO": (int,),
+    "DECIMAL": (int, float),
+    "TEXTO": (str,),
+    "BOOLEANO": (bool,),
+}
 
 class Interprete:
     def __init__(self):
@@ -35,6 +51,19 @@ class Interprete:
                 nodo.operador,
                 derecho,
             )
+
+        if isinstance(nodo, Variable):
+            datos = self.buscar_variable(nodo.token)
+
+            if not datos["inicializada"]:
+                raise ErrorSemantico(
+                    f"la variable '{nodo.token.texto}' "
+                    "no tiene un valor asignado",
+                    nodo.token.linea,
+                    nodo.token.columna,
+                )
+
+            return datos["valor"]
 
         # Durante el desarrollo, señala los nodos aún no implementados.
         raise NotImplementedError(
@@ -102,4 +131,102 @@ class Interprete:
 
         raise NotImplementedError(
             f"Operador todavía no implementado: {signo}"
+        )
+
+    def buscar_variable(self, token):
+        """Busca una variable o informa que no ha sido declarada."""
+        nombre = token.texto
+
+        if nombre not in self.entorno:
+            raise ErrorSemantico(
+                f"la variable '{nombre}' no ha sido declarada",
+                token.linea,
+                token.columna,
+            )
+
+        return self.entorno[nombre]
+
+    def validar_tipo(self, tipo, valor, token):
+        """Comprueba el tipo y devuelve el valor listo para guardar."""
+        if type(valor) not in ACEPTA[tipo]:
+            raise ErrorSemantico(
+                f"no se puede guardar ese valor en la variable "
+                f"'{token.texto}' de tipo {tipo}",
+                token.linea,
+                token.columna,
+            )
+
+        # Las variables DECIMAL guardan sus números como float.
+        if tipo == "DECIMAL":
+            return float(valor)
+
+        return valor
+
+    def ejecutar_programa(self, programa):
+        """Ejecuta las instrucciones en el orden del archivo."""
+        for instruccion in programa.instrucciones:
+            self.ejecutar(instruccion)
+
+    def ejecutar(self, nodo):
+        """Ejecuta una declaración, asignación o salida."""
+
+        if isinstance(nodo, Declaracion):
+            nombre = nodo.nombre.texto
+
+            if nombre in self.entorno:
+                linea_anterior = self.entorno[nombre]["linea"]
+
+                raise ErrorSemantico(
+                    f"la variable '{nombre}' ya fue declarada "
+                    f"en la línea {linea_anterior}",
+                    nodo.nombre.linea,
+                    nodo.nombre.columna,
+                )
+
+            inicializada = nodo.valor is not None
+            valor = None
+
+            if inicializada:
+                valor = self.evaluar(nodo.valor)
+                valor = self.validar_tipo(
+                    nodo.tipo.texto,
+                    valor,
+                    nodo.nombre,
+                )
+
+            self.entorno[nombre] = {
+                "tipo": nodo.tipo.texto,
+                "valor": valor,
+                "linea": nodo.nombre.linea,
+                "inicializada": inicializada,
+            }
+            return
+
+        if isinstance(nodo, Asignacion):
+            datos = self.buscar_variable(nodo.nombre)
+
+            valor = self.evaluar(nodo.valor)
+            valor = self.validar_tipo(
+                datos["tipo"],
+                valor,
+                nodo.nombre,
+            )
+
+            datos["valor"] = valor
+            datos["inicializada"] = True
+            return
+
+        if isinstance(nodo, Mostrar):
+            valor = self.evaluar(nodo.valor)
+
+            if type(valor) is bool:
+                print("SISAS" if valor else "NONAS")
+            else:
+                print(valor)
+
+            return
+
+        raise NotImplementedError(
+            f"No se ha implementado la ejecución de "
+            f"{type(nodo).__name__}"
         )

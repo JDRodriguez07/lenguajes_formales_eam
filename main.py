@@ -1,11 +1,11 @@
-"""Lee un archivo y muestra el árbol construido por el parser."""
+"""Lee y ejecuta un programa de Tuquiquilulu."""
 
 import sys
 
 from tuquiquilulu.lexer import tokenizar
 from tuquiquilulu.parser import Parser
 from tuquiquilulu.tokens import ErrorDeLenguaje
-from tuquiquilulu.arbol import mostrar_arbol
+from tuquiquilulu.interprete import Interprete
 
 
 def main():
@@ -21,9 +21,9 @@ def main():
         with open(ruta, encoding="utf-8") as archivo:
             texto = archivo.read()
 
-        # Texto -> tokens -> árbol. Todavía no se ejecutan instrucciones.
+        # Texto -> tokens -> árbol -> ejecución.
         programa = Parser(tokenizar(texto)).programa()
-        mostrar_arbol(programa)
+        Interprete().ejecutar_programa(programa)
 
     except ErrorDeLenguaje as error:
         print(error)
