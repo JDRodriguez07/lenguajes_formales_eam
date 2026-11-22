@@ -1,0 +1,4 @@
+PILAS (1 == 1) DE UNA {
+    PILLE secreto COMO ENTERO = 42 LISTO
+} LISTO
+QUIUBO(secreto) LISTO

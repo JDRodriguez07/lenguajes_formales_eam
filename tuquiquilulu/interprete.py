@@ -25,10 +25,29 @@ ACEPTA = {
 
 MAX_ITERACIONES = 100_000
 
+class Entorno:
+    """Guarda variables locales y una referencia al entorno exterior."""
+
+    def __init__(self, padre=None):
+        self.variables = {}
+        self.padre = padre
+
+    def buscar(self, nombre):
+        """Busca primero aquí y luego en los entornos exteriores."""
+        entorno = self
+
+        while entorno is not None:
+            if nombre in entorno.variables:
+                return entorno.variables[nombre]
+
+            entorno = entorno.padre
+
+        return None
+
 class Interprete:
     def __init__(self):
-        # Aquí guardaremos las variables cuando implementemos declaraciones.
-        self.entorno = {}
+        # El programa empieza con un entorno global, sin padre.
+        self.entorno = Entorno()
 
     def evaluar(self, nodo):
         """Convierte un nodo de expresión en un valor de Python."""
@@ -150,17 +169,18 @@ class Interprete:
         )
 
     def buscar_variable(self, token):
-        """Busca una variable o informa que no ha sido declarada."""
+        """Busca una variable en el ámbito actual y sus exteriores."""
         nombre = token.texto
+        datos = self.entorno.buscar(nombre)
 
-        if nombre not in self.entorno:
+        if datos is None:
             raise ErrorSemantico(
                 f"la variable '{nombre}' no ha sido declarada",
                 token.linea,
                 token.columna,
             )
 
-        return self.entorno[nombre]
+        return datos
 
     def validar_tipo(self, tipo, valor, token):
         """Comprueba el tipo y devuelve el valor listo para guardar."""
@@ -189,8 +209,8 @@ class Interprete:
         if isinstance(nodo, Declaracion):
             nombre = nodo.nombre.texto
 
-            if nombre in self.entorno:
-                linea_anterior = self.entorno[nombre]["linea"]
+            if nombre in self.entorno.variables:
+                linea_anterior = self.entorno.variables[nombre]["linea"]
 
                 raise ErrorSemantico(
                     f"la variable '{nombre}' ya fue declarada "
@@ -210,7 +230,7 @@ class Interprete:
                     nodo.nombre,
                 )
 
-            self.entorno[nombre] = {
+            self.entorno.variables[nombre] = {
                 "tipo": nodo.tipo.texto,
                 "valor": valor,
                 "linea": nodo.nombre.linea,
@@ -243,8 +263,15 @@ class Interprete:
             return
 
         if isinstance(nodo, Bloque):
-            for instruccion in nodo.instrucciones:
-                self.ejecutar(instruccion)
+            anterior = self.entorno
+            self.entorno = Entorno(padre=anterior)
+
+            try:
+                for instruccion in nodo.instrucciones:
+                    self.ejecutar(instruccion)
+            finally:
+                self.entorno = anterior
+
             return
 
         if isinstance(nodo, Condicional):
