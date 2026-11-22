@@ -256,7 +256,7 @@ class Parser:
 
         self.esperar("FIN_INSTRUCCION", "LISTO")
 
-        return Mientras(palabra, condicion, cuerpo)  
+        return Mientras(palabra, condicion, cuerpo)
 
     def es_reservada(self, palabra):
         token = self.actual()
@@ -309,4 +309,4 @@ class Parser:
 
             return Comparacion(izq, operador, der)
 
-        return izq 
+        return izq

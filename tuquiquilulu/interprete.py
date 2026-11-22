@@ -16,7 +16,7 @@ from .arbol import (
     Mientras,
     OperacionLogica,
     Negacion,
-    
+
 )
 
 from .tokens import ErrorSemantico
