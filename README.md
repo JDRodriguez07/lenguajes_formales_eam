@@ -1,6 +1,7 @@
 # 1. Tuquiquilulu — Lenguajes Formales
 
-Proyecto de Lenguajes Formales — EAM  
+Proyecto de Lenguajes Formales — EAM
+
 Grupo 1: Los Más Chimbas
 
 ## Integrantes
