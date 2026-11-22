@@ -1,0 +1,2 @@
+PILLE puntos COMO ENTERO = 5 LISTO
+QUIUBO(puntos + 2) LISTO

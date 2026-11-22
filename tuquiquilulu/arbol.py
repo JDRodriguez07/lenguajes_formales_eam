@@ -43,6 +43,11 @@ class Asignacion:
     nombre: Token
     valor: object
 
+@dataclass
+class Mostrar:
+    palabra: Token
+    valor: object
+
 
 @dataclass
 class Programa:
@@ -65,6 +70,8 @@ def representar_arbol(nodo, nivel=0):
         titulo, hijos = f"OperacionBinaria {nodo.operador.texto}", [nodo.izq, nodo.der]
     elif isinstance(nodo, (Numero, Cadena, Booleano, Variable)):
         titulo, hijos = f"{type(nodo).__name__} {nodo.token.texto}", []
+    elif isinstance(nodo, Mostrar):
+        titulo, hijos = "Mostrar", [nodo.valor]
     else:
         raise TypeError(f"Nodo desconocido: {type(nodo).__name__}")
     lineas = [prefijo + titulo]

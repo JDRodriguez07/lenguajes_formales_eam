@@ -2,7 +2,8 @@
 
 Gramática EBNF del alcance del 14 de noviembre:
 programa    ::= instruccion* EOF
-instruccion ::= declaracion | asignacion
+instruccion ::= declaracion | asignacion | salida
+salida      ::= "QUIUBO" "(" expresion ")" "LISTO"
 declaracion ::= "PILLE" IDENTIFICADOR "COMO" TIPO ("=" expresion)? "LISTO"
 asignacion  ::= IDENTIFICADOR "=" expresion "LISTO"
 expresion   ::= termino (("+" | "-") termino)*
@@ -17,7 +18,7 @@ PILLE y COMO son RESERVADA. Los signos aritméticos son OPERADOR.
 from .tokens import ErrorSintactico
 from .arbol import (
     Programa, Declaracion, Asignacion, OperacionBinaria,
-    Numero, Cadena, Booleano, Variable,
+    Numero, Cadena, Booleano, Variable, Mostrar,
 )
 
 
@@ -60,13 +61,21 @@ class Parser:
 
     def instruccion(self):
         token = self.actual()
+
         if token.tipo == "RESERVADA" and token.texto == "PILLE":
             return self.declaracion()
+
+        if token.tipo == "RESERVADA" and token.texto == "QUIUBO":
+            return self.salida()
+
         if token.tipo == "IDENTIFICADOR":
             return self.asignacion()
+
         raise ErrorSintactico(
-            f"se esperaba una declaración o asignación y llegó {token.texto!r}",
-            token.linea, token.columna,
+            "se esperaba una declaración, asignación o salida "
+            f"y llegó {token.texto!r}",
+            token.linea,
+            token.columna,
         )
 
     def declaracion(self):
@@ -87,6 +96,16 @@ class Parser:
         valor = self.expresion()
         self.esperar("FIN_INSTRUCCION", "LISTO")
         return Asignacion(nombre, valor)
+
+    def salida(self):
+        """Reconoce una instrucción de salida y construye su nodo."""
+        palabra = self.esperar("RESERVADA", "QUIUBO")
+        self.esperar("SIMBOLO", "(")
+        valor = self.expresion()
+        self.esperar("SIMBOLO", ")")
+        self.esperar("FIN_INSTRUCCION", "LISTO")
+
+        return Mostrar(palabra, valor)
 
     def expresion(self):
         izq = self.termino()
