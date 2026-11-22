@@ -1,6 +1,7 @@
 """Parser por descenso recursivo. Construye el árbol; todavía no ejecuta.
 
 Gramática EBNF del alcance del 14 de noviembre:
+bloque      ::= "{" instruccion* "}"
 programa    ::= instruccion* EOF
 instruccion ::= declaracion | asignacion | salida
 salida      ::= "QUIUBO" "(" expresion ")" "LISTO"
@@ -19,7 +20,7 @@ PILLE y COMO son RESERVADA. Los signos aritméticos son OPERADOR.
 from .tokens import ErrorSintactico
 from .arbol import (
     Comparacion, Programa, Declaracion, Asignacion, OperacionBinaria,
-    Numero, Cadena, Booleano, Variable, Mostrar,
+    Numero, Cadena, Booleano, Variable, Mostrar, Bloque,
 )
 
 
@@ -59,6 +60,28 @@ class Parser:
             instrucciones.append(self.instruccion())
         self.esperar("EOF")
         return Programa(instrucciones)
+
+    def bloque(self):
+        """Reconoce instrucciones entre llaves y conserva su apertura."""
+        apertura = self.esperar("SIMBOLO", "{")
+        instrucciones = []
+
+        while not (
+            self.actual().tipo == "SIMBOLO"
+            and self.actual().texto == "}"
+        ):
+            if self.actual().tipo == "EOF":
+                raise ErrorSintactico(
+                    "bloque sin cerrar: se esperaba '}'",
+                    apertura.linea,
+                    apertura.columna,
+                )
+
+            instrucciones.append(self.instruccion())
+
+        self.esperar("SIMBOLO", "}")
+
+        return Bloque(apertura, instrucciones)
 
     def instruccion(self):
         token = self.actual()

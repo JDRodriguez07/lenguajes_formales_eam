@@ -59,12 +59,18 @@ class Mostrar:
 class Programa:
     instrucciones: list
 
+@dataclass
+class Bloque:
+    apertura: Token
+    instrucciones: list
 
 def representar_arbol(nodo, nivel=0):
     """Devuelve texto para comparar en pruebas o mostrar en consola."""
     prefijo = "  " * nivel
     if isinstance(nodo, Programa):
         titulo, hijos = "Programa", nodo.instrucciones
+    elif isinstance(nodo, Bloque):
+        titulo, hijos = "Bloque", nodo.instrucciones
     elif isinstance(nodo, Declaracion):
         titulo = f"Declaracion {nodo.tipo.texto} {nodo.nombre.texto}"
         hijos = [] if nodo.valor is None else [nodo.valor]
