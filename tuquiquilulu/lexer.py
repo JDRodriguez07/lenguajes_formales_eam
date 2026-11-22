@@ -27,11 +27,12 @@ INICIO_COMENTARIO_BLOQUE = "/*"
 
 FIN_COMENTARIO_BLOQUE = "*/"
 
-# Operadores de un carácter.
-OPERADORES = {"+", "-", "*", "/", "<", ">"}
+# Operadores aritméticos.
+OPERADORES = {"+", "-", "*", "/"}
 
-# Operadores de dos caracteres.
-OPERADORES_DOBLES = {"==", "!=", "<=", ">="}
+# Comparadores: se reconocen primero los de dos caracteres.
+COMPARADORES_DOBLES = {"==", "!=", "<=", ">="}
+COMPARADORES_SIMPLES = {"<", ">"}
 
 # Delimitadores y signos de puntuación de la tarea 8.
 SIMBOLOS = {"(", ")", "{", "}", ",", ".", ";"}
@@ -188,13 +189,25 @@ def tokenizar(texto):
             tokens.append(Token(tipo, palabra, linea, columna_inicio))
 
         # 7. Reconocer operadores de dos caracteres.
-        elif texto[i:i + 2] in OPERADORES_DOBLES:
-            operador = texto[i:i + 2]
+        # Reconocer comparadores dobles antes de la asignación.
+        elif texto[i:i + 2] in COMPARADORES_DOBLES:
+            comparador = texto[i:i + 2]
 
-            tokens.append(Token("OPERADOR", operador, linea, columna))
+            tokens.append(
+                Token("COMPARADOR", comparador, linea, columna)
+            )
 
             i += 2
             columna += 2
+
+        # Reconocer comparadores de un carácter.
+        elif c in COMPARADORES_SIMPLES:
+            tokens.append(
+                Token("COMPARADOR", c, linea, columna)
+            )
+
+            i += 1
+            columna += 1
 
         # 8. Reconocer la asignación.
         elif c == "=":

@@ -6,6 +6,7 @@ instruccion ::= declaracion | asignacion | salida
 salida      ::= "QUIUBO" "(" expresion ")" "LISTO"
 declaracion ::= "PILLE" IDENTIFICADOR "COMO" TIPO ("=" expresion)? "LISTO"
 asignacion  ::= IDENTIFICADOR "=" expresion "LISTO"
+condicion ::= expresion COMPARADOR expresion
 expresion   ::= termino (("+" | "-") termino)*
 termino     ::= factor (("*" | "/") factor)*
 factor      ::= NUMERO | TEXTO | BOOLEANO | IDENTIFICADOR | "(" expresion ")"
@@ -17,7 +18,7 @@ PILLE y COMO son RESERVADA. Los signos aritméticos son OPERADOR.
 
 from .tokens import ErrorSintactico
 from .arbol import (
-    Programa, Declaracion, Asignacion, OperacionBinaria,
+    Comparacion, Programa, Declaracion, Asignacion, OperacionBinaria,
     Numero, Cadena, Booleano, Variable, Mostrar,
 )
 
@@ -123,6 +124,18 @@ class Parser:
             izq = OperacionBinaria(izq, operador, der)
         return izq
 
+    def condicion(self):
+        """Reconoce dos expresiones separadas por un comparador."""
+        izquierdo = self.expresion()
+        operador = self.esperar("COMPARADOR")
+        derecho = self.expresion()
+
+        return Comparacion(
+            izquierdo,
+            operador,
+            derecho,
+        )
+
     def factor(self):
         token = self.actual()
         if token.tipo == "NUMERO":
@@ -143,3 +156,4 @@ class Parser:
             "se esperaba un número, un texto, un booleano, una variable o '(' "
             f"y llegó {recibido}", token.linea, token.columna,
         )
+    

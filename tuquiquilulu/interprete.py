@@ -3,6 +3,7 @@
 from .arbol import (
     Numero,
     Cadena,
+    Comparacion,
     Booleano,
     OperacionBinaria,
     Variable,
@@ -64,6 +65,16 @@ class Interprete:
                 )
 
             return datos["valor"]
+
+        if isinstance(nodo, Comparacion):
+            izquierdo = self.evaluar(nodo.izq)
+            derecho = self.evaluar(nodo.der)
+
+            return self.comparar(
+                izquierdo,
+                nodo.operador,
+                derecho,
+            )
 
         # Durante el desarrollo, señala los nodos aún no implementados.
         raise NotImplementedError(
@@ -229,4 +240,53 @@ class Interprete:
         raise NotImplementedError(
             f"No se ha implementado la ejecución de "
             f"{type(nodo).__name__}"
+        )
+
+    def comparar(self, izquierdo, operador, derecho):
+        """Compara valores aplicando las reglas de nuestro lenguaje."""
+        signo = operador.texto
+
+        ambos_numeros = (
+            type(izquierdo) in (int, float)
+            and type(derecho) in (int, float)
+        )
+
+        mismo_tipo = type(izquierdo) is type(derecho)
+
+        # Igualdad y diferencia admiten números, textos y booleanos.
+        if signo in ("==", "!="):
+            if not (ambos_numeros or mismo_tipo):
+                raise ErrorSemantico(
+                    "no se pueden comparar valores de tipos incompatibles",
+                    operador.linea,
+                    operador.columna,
+                )
+
+            if signo == "==":
+                return izquierdo == derecho
+
+            return izquierdo != derecho
+
+        # Las comparaciones de orden solo admiten números.
+        if not ambos_numeros:
+            raise ErrorSemantico(
+                f"el comparador '{signo}' requiere números",
+                operador.linea,
+                operador.columna,
+            )
+
+        if signo == "<":
+            return izquierdo < derecho
+
+        if signo == ">":
+            return izquierdo > derecho
+
+        if signo == "<=":
+            return izquierdo <= derecho
+
+        if signo == ">=":
+            return izquierdo >= derecho
+
+        raise NotImplementedError(
+            f"Comparador todavía no implementado: {signo}"
         )

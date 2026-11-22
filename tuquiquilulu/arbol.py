@@ -44,6 +44,12 @@ class Asignacion:
     valor: object
 
 @dataclass
+class Comparacion:
+    izq: object
+    operador: Token
+    der: object
+
+@dataclass
 class Mostrar:
     palabra: Token
     valor: object
@@ -72,6 +78,9 @@ def representar_arbol(nodo, nivel=0):
         titulo, hijos = f"{type(nodo).__name__} {nodo.token.texto}", []
     elif isinstance(nodo, Mostrar):
         titulo, hijos = "Mostrar", [nodo.valor]
+    elif isinstance(nodo, Comparacion):
+        titulo = f"Comparacion {nodo.operador.texto}"
+        hijos = [nodo.izq, nodo.der]
     else:
         raise TypeError(f"Nodo desconocido: {type(nodo).__name__}")
     lineas = [prefijo + titulo]
