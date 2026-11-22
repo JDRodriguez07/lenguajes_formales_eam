@@ -64,6 +64,13 @@ class Bloque:
     apertura: Token
     instrucciones: list
 
+@dataclass
+class Condicional:
+    palabra: Token
+    condicion: object
+    entonces: Bloque
+    alternativa: Bloque | None
+
 def representar_arbol(nodo, nivel=0):
     """Devuelve texto para comparar en pruebas o mostrar en consola."""
     prefijo = "  " * nivel
@@ -87,6 +94,12 @@ def representar_arbol(nodo, nivel=0):
     elif isinstance(nodo, Comparacion):
         titulo = f"Comparacion {nodo.operador.texto}"
         hijos = [nodo.izq, nodo.der]
+    elif isinstance(nodo, Condicional):
+        titulo = "Condicional"
+        hijos = [nodo.condicion, nodo.entonces]
+
+        if nodo.alternativa is not None:
+            hijos.append(nodo.alternativa)
     else:
         raise TypeError(f"Nodo desconocido: {type(nodo).__name__}")
     lineas = [prefijo + titulo]

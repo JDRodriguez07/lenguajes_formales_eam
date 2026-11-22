@@ -12,6 +12,8 @@ RESERVADAS = {
 
     # Palabras de control solicitadas en la guía.
     "if", "else", "while",
+
+    "DE", "UNA", "O", "SI", "NO",
 }
 
 BOOLEANOS = {

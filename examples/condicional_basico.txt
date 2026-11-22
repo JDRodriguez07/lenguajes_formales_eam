@@ -1,0 +1,21 @@
+PILLE puntos COMO ENTERO = 8 LISTO
+
+PILAS (puntos >= 5) DE UNA {
+    QUIUBO("Ganaste") LISTO
+} O SI NO {
+    QUIUBO("Sigue intentando") LISTO
+} LISTO
+
+puntos = 2 LISTO
+
+PILAS (puntos >= 5) DE UNA {
+    QUIUBO("Ganaste") LISTO
+} O SI NO {
+    QUIUBO("Sigue intentando") LISTO
+} LISTO
+
+PILAS (puntos > 100) DE UNA {
+    QUIUBO("Este mensaje no debe aparecer") LISTO
+} LISTO
+
+QUIUBO("Fin de las decisiones") LISTO

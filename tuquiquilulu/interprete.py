@@ -10,6 +10,8 @@ from .arbol import (
     Declaracion,
     Asignacion,
     Mostrar,
+    Bloque,
+    Condicional,
 )
 from .tokens import ErrorSemantico
 
@@ -234,6 +236,28 @@ class Interprete:
                 print("SISAS" if valor else "NONAS")
             else:
                 print(valor)
+
+            return
+
+        if isinstance(nodo, Bloque):
+            for instruccion in nodo.instrucciones:
+                self.ejecutar(instruccion)
+            return
+
+        if isinstance(nodo, Condicional):
+            resultado = self.evaluar(nodo.condicion)
+
+            if type(resultado) is not bool:
+                raise ErrorSemantico(
+                    "la condición de PILAS debe ser un booleano",
+                    nodo.palabra.linea,
+                    nodo.palabra.columna,
+                )
+
+            if resultado:
+                self.ejecutar(nodo.entonces)
+            elif nodo.alternativa is not None:
+                self.ejecutar(nodo.alternativa)
 
             return
 

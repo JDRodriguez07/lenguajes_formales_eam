@@ -3,9 +3,11 @@
 Gramática EBNF del alcance del 14 de noviembre:
 bloque      ::= "{" instruccion* "}"
 programa    ::= instruccion* EOF
-instruccion ::= declaracion | asignacion | salida
+instruccion ::= declaracion | asignacion | salida | condicional
 salida      ::= "QUIUBO" "(" expresion ")" "LISTO"
 declaracion ::= "PILLE" IDENTIFICADOR "COMO" TIPO ("=" expresion)? "LISTO"
+condicional ::= "PILAS" "(" condicion ")" "DE" "UNA" bloque
+                ("O" "SI" "NO" bloque)? "LISTO"
 asignacion  ::= IDENTIFICADOR "=" expresion "LISTO"
 condicion ::= expresion COMPARADOR expresion
 expresion   ::= termino (("+" | "-") termino)*
@@ -20,7 +22,7 @@ PILLE y COMO son RESERVADA. Los signos aritméticos son OPERADOR.
 from .tokens import ErrorSintactico
 from .arbol import (
     Comparacion, Programa, Declaracion, Asignacion, OperacionBinaria,
-    Numero, Cadena, Booleano, Variable, Mostrar, Bloque,
+    Numero, Cadena, Booleano, Variable, Mostrar, Bloque, Condicional,
 )
 
 
@@ -83,6 +85,38 @@ class Parser:
 
         return Bloque(apertura, instrucciones)
 
+    def condicional(self):
+        """Reconoce PILAS con un bloque y una alternativa opcional."""
+        palabra = self.esperar("RESERVADA", "PILAS")
+
+        self.esperar("SIMBOLO", "(")
+        condicion = self.condicion()
+        self.esperar("SIMBOLO", ")")
+
+        self.esperar("RESERVADA", "DE")
+        self.esperar("RESERVADA", "UNA")
+        entonces = self.bloque()
+
+        alternativa = None
+
+        if (
+            self.actual().tipo == "RESERVADA"
+            and self.actual().texto == "O"
+        ):
+            self.esperar("RESERVADA", "O")
+            self.esperar("RESERVADA", "SI")
+            self.esperar("RESERVADA", "NO")
+            alternativa = self.bloque()
+
+        self.esperar("FIN_INSTRUCCION", "LISTO")
+
+        return Condicional(
+            palabra,
+            condicion,
+            entonces,
+            alternativa,
+        )
+
     def instruccion(self):
         token = self.actual()
 
@@ -94,6 +128,9 @@ class Parser:
 
         if token.tipo == "IDENTIFICADOR":
             return self.asignacion()
+
+        if token.tipo == "RESERVADA" and token.texto == "PILAS":
+            return self.condicional()
 
         raise ErrorSintactico(
             "se esperaba una declaración, asignación o salida "
