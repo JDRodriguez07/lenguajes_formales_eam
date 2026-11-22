@@ -8,7 +8,7 @@ TIPOS = {"ENTERO", "DECIMAL", "TEXTO", "BOOLEANO"}
 
 RESERVADAS = {
     # Palabras de Tuquiquilulu.
-    "PILLE", "COMO", "PILAS", "QUIUBO",
+    "PILLE", "COMO", "PILAS", "QUIUBO", "MIENTRAS",
 
     # Palabras de control solicitadas en la guía.
     "if", "else", "while",

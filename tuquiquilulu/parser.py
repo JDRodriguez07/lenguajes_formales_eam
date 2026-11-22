@@ -3,7 +3,7 @@
 Gramática EBNF del alcance del 14 de noviembre:
 bloque      ::= "{" instruccion* "}"
 programa    ::= instruccion* EOF
-instruccion ::= declaracion | asignacion | salida | condicional
+instruccion ::= declaracion | asignacion | salida | condicional | mientras
 salida      ::= "QUIUBO" "(" expresion ")" "LISTO"
 declaracion ::= "PILLE" IDENTIFICADOR "COMO" TIPO ("=" expresion)? "LISTO"
 condicional ::= "PILAS" "(" condicion ")" "DE" "UNA" bloque
@@ -13,6 +13,7 @@ condicion ::= expresion COMPARADOR expresion
 expresion   ::= termino (("+" | "-") termino)*
 termino     ::= factor (("*" | "/") factor)*
 factor      ::= NUMERO | TEXTO | BOOLEANO | IDENTIFICADOR | "(" expresion ")"
+mientras    ::= "MIENTRAS" "(" condicion ")" "DE" "UNA" bloque "LISTO"
 
 "=" es ASIGNACION; "LISTO" es FIN_INSTRUCCION; paréntesis son SIMBOLO.
 PILLE y COMO son RESERVADA. Los signos aritméticos son OPERADOR.
@@ -23,6 +24,7 @@ from .tokens import ErrorSintactico
 from .arbol import (
     Comparacion, Programa, Declaracion, Asignacion, OperacionBinaria,
     Numero, Cadena, Booleano, Variable, Mostrar, Bloque, Condicional,
+    Mientras,
 )
 
 
@@ -132,6 +134,9 @@ class Parser:
         if token.tipo == "RESERVADA" and token.texto == "PILAS":
             return self.condicional()
 
+        if token.tipo == "RESERVADA" and token.texto == "MIENTRAS":
+            return self.mientras()
+
         raise ErrorSintactico(
             "se esperaba una declaración, asignación o salida "
             f"y llegó {token.texto!r}",
@@ -216,4 +221,19 @@ class Parser:
             "se esperaba un número, un texto, un booleano, una variable o '(' "
             f"y llegó {recibido}", token.linea, token.columna,
         )
-    
+
+    def mientras(self):
+        """Reconoce la condición y el bloque de un ciclo."""
+        palabra = self.esperar("RESERVADA", "MIENTRAS")
+
+        self.esperar("SIMBOLO", "(")
+        condicion = self.condicion()
+        self.esperar("SIMBOLO", ")")
+
+        self.esperar("RESERVADA", "DE")
+        self.esperar("RESERVADA", "UNA")
+        cuerpo = self.bloque()
+
+        self.esperar("FIN_INSTRUCCION", "LISTO")
+
+        return Mientras(palabra, condicion, cuerpo)    

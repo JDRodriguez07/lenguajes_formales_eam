@@ -12,6 +12,7 @@ from .arbol import (
     Mostrar,
     Bloque,
     Condicional,
+    Mientras,
 )
 from .tokens import ErrorSemantico
 
@@ -21,6 +22,8 @@ ACEPTA = {
     "TEXTO": (str,),
     "BOOLEANO": (bool,),
 }
+
+MAX_ITERACIONES = 100_000
 
 class Interprete:
     def __init__(self):
@@ -258,6 +261,34 @@ class Interprete:
                 self.ejecutar(nodo.entonces)
             elif nodo.alternativa is not None:
                 self.ejecutar(nodo.alternativa)
+
+            return
+
+        if isinstance(nodo, Mientras):
+            iteraciones = 0
+
+            while True:
+                resultado = self.evaluar(nodo.condicion)
+
+                if type(resultado) is not bool:
+                    raise ErrorSemantico(
+                        "la condición de MIENTRAS debe ser un booleano",
+                        nodo.palabra.linea,
+                        nodo.palabra.columna,
+                    )
+
+                if not resultado:
+                    break
+
+                if iteraciones >= MAX_ITERACIONES:
+                    raise ErrorSemantico(
+                        f"el ciclo superó el límite de {MAX_ITERACIONES} iteraciones",
+                        nodo.palabra.linea,
+                        nodo.palabra.columna,
+                    )
+
+                self.ejecutar(nodo.cuerpo)
+                iteraciones += 1
 
             return
 
