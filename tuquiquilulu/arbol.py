@@ -69,6 +69,10 @@ class Mostrar:
     palabra: Token
     valor: object
 
+@dataclass
+class Leer:
+    palabra: Token
+    nombre: Token
 
 @dataclass
 class Programa:
@@ -134,6 +138,9 @@ def representar_arbol(nodo, nivel=0):
     elif isinstance(nodo, Negacion):
         titulo = "Negacion"
         hijos = [nodo.operando]
+    elif isinstance(nodo, Leer):
+        titulo = f"Leer {nodo.nombre.texto}"
+        hijos = []
     else:
         raise TypeError(f"Nodo desconocido: {type(nodo).__name__}")
     lineas = [prefijo + titulo]

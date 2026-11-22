@@ -3,12 +3,13 @@
 Gramática EBNF del alcance del 14 de noviembre:
 bloque      ::= "{" instruccion* "}"
 programa    ::= instruccion* EOF
-instruccion ::= declaracion | asignacion | salida | condicional | mientras
+instruccion ::= declaracion | asignacion | salida | condicional | mientras | lectura
 salida      ::= "QUIUBO" "(" expresion ")" "LISTO"
 declaracion ::= "PILLE" IDENTIFICADOR "COMO" TIPO ("=" expresion)? "LISTO"
 condicional ::= "PILAS" "(" condicion ")" "DE" "UNA" bloque
                 ("O" "SI" "NO" bloque)? "LISTO"
 asignacion  ::= IDENTIFICADOR "=" expresion "LISTO"
+lectura     ::= "LEA" "(" IDENTIFICADOR ")" "LISTO"
 condicion   ::= expresion
 expresion   ::= logica_o
 termino     ::= unario (("*" | "/") unario)*
@@ -30,7 +31,7 @@ from .tokens import ErrorSintactico
 from .arbol import (
     Comparacion, Programa, Declaracion, Asignacion, OperacionBinaria,
     Numero, Cadena, Booleano, Variable, Mostrar, Bloque, Condicional,
-    Mientras, OperacionUnaria, OperacionLogica, Negacion,
+    Mientras, OperacionUnaria, OperacionLogica, Negacion, Leer,
 )
 
 
@@ -143,6 +144,9 @@ class Parser:
         if token.tipo == "RESERVADA" and token.texto == "MIENTRAS":
             return self.mientras()
 
+        if token.tipo == "RESERVADA" and token.texto == "LEA":
+            return self.lectura()
+
         raise ErrorSintactico(
             "se esperaba una declaración, asignación o salida "
             f"y llegó {token.texto!r}",
@@ -178,6 +182,16 @@ class Parser:
         self.esperar("FIN_INSTRUCCION", "LISTO")
 
         return Mostrar(palabra, valor)
+
+    def lectura(self):
+        """Reconoce la variable que recibirá un dato de consola."""
+        palabra = self.esperar("RESERVADA", "LEA")
+        self.esperar("SIMBOLO", "(")
+        nombre = self.esperar("IDENTIFICADOR")
+        self.esperar("SIMBOLO", ")")
+        self.esperar("FIN_INSTRUCCION", "LISTO")
+
+        return Leer(palabra, nombre)
 
     def aritmetica(self):
         izq = self.termino()

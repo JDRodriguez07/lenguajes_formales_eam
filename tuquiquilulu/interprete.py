@@ -16,10 +16,13 @@ from .arbol import (
     Mientras,
     OperacionLogica,
     Negacion,
-
+    Leer,
 )
 
 from .tokens import ErrorSemantico
+
+import math
+import re
 
 ACEPTA = {
     "ENTERO": (int,),
@@ -266,6 +269,41 @@ class Interprete:
 
         return valor
 
+    def convertir_entrada(self, entrada, tipo, token):
+        """Convierte lo escrito por el usuario al tipo de la variable."""
+        if tipo == "TEXTO":
+            return entrada
+
+        texto = entrada.strip()
+
+        if tipo == "ENTERO":
+            if re.fullmatch(r"-?[0-9]+", texto):
+                try:
+                    return int(texto)
+                except ValueError:
+                    pass
+
+        elif tipo == "DECIMAL":
+            if re.fullmatch(r"-?[0-9]+(?:\.[0-9]+)?", texto):
+                valor = float(texto)
+
+                if math.isfinite(valor):
+                    return valor
+
+        elif tipo == "BOOLEANO":
+            if texto in {"SISAS", "MELO", "true"}:
+                return True
+
+            if texto in {"NONAS", "PAILA", "false"}:
+                return False
+
+        raise ErrorSemantico(
+            f"entrada inválida para '{token.texto}': "
+            f"se esperaba un valor de tipo {tipo}",
+            token.linea,
+            token.columna,
+        )
+
     def ejecutar_programa(self, programa):
         """Ejecuta las instrucciones en el orden del archivo."""
         for instruccion in programa.instrucciones:
@@ -385,6 +423,29 @@ class Interprete:
                 self.ejecutar(nodo.cuerpo)
                 iteraciones += 1
 
+            return
+
+        if isinstance(nodo, Leer):
+            datos = self.buscar_variable(nodo.nombre)
+
+            try:
+                entrada = input(f"{nodo.nombre.texto}: ")
+            except EOFError:
+                raise ErrorSemantico(
+                    f"no se recibió una entrada para "
+                    f"'{nodo.nombre.texto}'",
+                    nodo.nombre.linea,
+                    nodo.nombre.columna,
+                ) from None
+
+            valor = self.convertir_entrada(
+                entrada,
+                datos["tipo"],
+                nodo.nombre,
+            )
+
+            datos["valor"] = valor
+            datos["inicializada"] = True
             return
 
         raise NotImplementedError(

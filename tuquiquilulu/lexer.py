@@ -16,6 +16,8 @@ RESERVADAS = {
     "DE", "UNA", "O", "SI", "NO",
 
     "Y", "ADEMÁS", "PRONTO", "NADA",
+
+    "LEA",
 }
 
 BOOLEANOS = {
